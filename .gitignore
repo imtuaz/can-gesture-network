@@ -1,0 +1,22 @@
+# build outputs
+build/
+Debug/
+Release/
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+
+# IDE
+.vscode/
+.settings/
+*.launch
+
+# ESP-IDF
+sdkconfig.old
+managed_components/
+
+# OS
+.DS_Store
+Thumbs.db
