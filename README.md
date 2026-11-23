@@ -30,7 +30,7 @@ becomes a CAN command.
 | 2 | ESP32 TWAI in loopback mode | frame sent and received by itself | ✅ |
 | 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | ✅ STM32 ACKs every frame (ESP32 TEC = 0); UART print not yet viewed |
 | 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | 🟡 decoded in PulseView ([capture](captures/m4_frame_0x123_pulseview.png)); protocol-analyzer pending |
-| 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ☐ |
+| 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ✅ STM32 replies with LED state (0x200), round trip < 1 ms |
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ☐ |
 | 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ☐ |
 
@@ -38,10 +38,10 @@ becomes a CAN command.
 
 | ID | Sender | DLC | Data | Meaning |
 |----|--------|-----|------|---------|
-| `0x100` | Node 1 | 1 | button state | milestone 5 |
+| `0x100` | Node 1 | 1 | LED command (0 = off, 1 = on) | milestone 5 |
 | `0x110` | Node 1 | 4 | roll, pitch (int16, 0.01°) | milestone 6 |
 | `0x120` | Node 1 | 1 | gesture id | milestone 7 |
-| `0x200` | Node 2 | 1 | heartbeat counter | node 2 alive |
+| `0x200` | Node 2 | 1 | LED state after the command | milestone 5 reply |
 
 Bit rate: **500 kbit/s**.
 
@@ -58,8 +58,8 @@ and channel D1 (STM32 CAN_TX, PB9) goes dominant for exactly one bit in the ACK 
 ```
 docs/       wiring, bill of materials, notes and lessons learned
 firmware/
-  node1_esp32/   Arduino sketches (ESP-IDF TWAI driver): m2_twai_loopback, m2_twai_loopback_status, m3_can_tx
-  node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx
+  node1_esp32/   Arduino sketches (ESP-IDF TWAI driver): m2_twai_loopback, m2_twai_loopback_status, m3_can_tx, m5_button_cmd
+  node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx, m5_led_cmd
 captures/   logic analyzer captures and decoded screenshots
 ```
 
