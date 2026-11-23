@@ -26,10 +26,10 @@ becomes a CAN command.
 
 | # | Goal | Done when | Status |
 |---|------|-----------|--------|
-| 1 | STM32 blinks, prints over UART | "hello" seen in serial terminal | ☐ |
-| 2 | ESP32 TWAI in loopback mode | frame sent and received by itself | ☐ |
-| 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | ☐ |
-| 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | ☐ |
+| 1 | STM32 blinks, prints over UART | "hello" seen in serial terminal | ✅ |
+| 2 | ESP32 TWAI in loopback mode | frame sent and received by itself | ✅ |
+| 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | ✅ STM32 ACKs every frame (ESP32 TEC = 0); UART print not yet viewed |
+| 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | 🟡 decoded in PulseView ([capture](captures/m4_frame_0x123_pulseview.png)); protocol-analyzer pending |
 | 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ☐ |
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ☐ |
 | 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ☐ |
@@ -45,14 +45,22 @@ becomes a CAN command.
 
 Bit rate: **500 kbit/s**.
 
+## First captured frame (milestone 4)
+
+![CAN frame 0x123 decoded in PulseView](captures/m4_frame_0x123_pulseview.png)
+
+ID `0x123`, DLC 2, data `AB B5`, CRC-15 `0x0E47`. One bit = 2 µs (500 kbit/s), whole frame ≈ 122 µs.
+A stuff bit is visible after five consecutive dominant bits (RTR, IDE, r0, first two DLC bits),
+and channel D1 (STM32 CAN_TX, PB9) goes dominant for exactly one bit in the ACK slot.
+
 ## Repository layout
 
 ```
 docs/       wiring, bill of materials, notes and lessons learned
 firmware/
-  node1_esp32/   ESP-IDF (or Arduino) project for the ESP32
-  node2_stm32/   STM32 project (CubeIDE or SPL)
-captures/   logic analyzer captures (CSV) and decoded reports
+  node1_esp32/   Arduino sketches (ESP-IDF TWAI driver): m2_twai_loopback, m2_twai_loopback_status, m3_can_tx
+  node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx
+captures/   logic analyzer captures and decoded screenshots
 ```
 
 See [docs/wiring.md](docs/wiring.md) and [docs/bom.md](docs/bom.md).
