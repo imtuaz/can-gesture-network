@@ -60,6 +60,15 @@ and channel D1 (STM32 CAN_TX, PB9) goes dominant for exactly one bit in the ACK 
 ID `0x110`, DLC 4, data `55 01 9E FF` → roll = 0x0155 = +341 → **+3.41°**, pitch = 0xFF9E = −98 → **−0.98°**.
 About 80 bits (4 stuff bits) ≈ 160 µs every 100 ms → bus load ≈ 0.16 %. D1 (STM32 PB9) drives the ACK bit.
 
+### Command and reply on the same bus
+
+![0x110 from ESP32 followed by 0x200 from STM32](captures/m6_frames_0x110_0x200_pulseview.png)
+
+0x110 data `BC F9 AB F9` → roll = 0xF9BC = −1604 → **−16.04°** (below the 25° off-threshold), so the STM32
+turns the LED off and answers with 0x200 data `00`. The reply starts about **70 µs** after the 0x110 frame ends.
+D1 (STM32 TX) is silent during 0x110 except for the ACK bit, and carries the whole 0x200 frame;
+in 0x200 the ACK bit appears on D0 only, driven by the ESP32 ([zoom](captures/m6_frame_0x200_pulseview.png)).
+
 ## Repository layout
 
 ```
