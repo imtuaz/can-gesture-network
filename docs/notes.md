@@ -14,3 +14,4 @@ Write down problems and how they were solved. This is what interviewers like to 
 | 2026-11-23 | PulseView "Capture failed", ESP32 port dropped | Windows "USB device not recognized" (USB glitch) | Re-plug devices; first capture triggered on a glitch, so capture longer instead of trusting the trigger |
 | 2026-11-23 | Milestone 5: STM32 reply took 3–4 ms | Blocking UART log (44 chars × 86.8 µs at 115200 = 3.8 ms) printed *before* sending the CAN reply | Send the reply first, log after → reply < 1 ms |
 | 2026-11-23 | ESP32 sketch failed: `GPIO_NUM_25` not declared | Arduino IDE board set to ESP32-S2 (no GPIO25) | Board → ESP32 Dev Module |
+| 2026-11-23 | Milestone 6: LED toggles briefly while shaking the sensor near 0° | Tilt is computed from the accelerometer only; hand acceleration adds to gravity | Expected limitation; fuse with gyro (complementary filter) in milestone 7 |
