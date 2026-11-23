@@ -53,6 +53,13 @@ ID `0x123`, DLC 2, data `AB B5`, CRC-15 `0x0E47`. One bit = 2 µs (500 kbit/s), 
 A stuff bit is visible after five consecutive dominant bits (RTR, IDE, r0, first two DLC bits),
 and channel D1 (STM32 CAN_TX, PB9) goes dominant for exactly one bit in the ACK slot.
 
+## Tilt frame (milestone 6)
+
+![CAN frame 0x110 decoded in PulseView](captures/m6_frame_0x110_pulseview.png)
+
+ID `0x110`, DLC 4, data `55 01 9E FF` → roll = 0x0155 = +341 → **+3.41°**, pitch = 0xFF9E = −98 → **−0.98°**.
+About 80 bits (4 stuff bits) ≈ 160 µs every 100 ms → bus load ≈ 0.16 %. D1 (STM32 PB9) drives the ACK bit.
+
 ## Repository layout
 
 ```
