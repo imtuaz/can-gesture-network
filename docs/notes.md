@@ -12,3 +12,5 @@ Write down problems and how they were solved. This is what interviewers like to 
 | 2026-11-23 | "CAN init OK" while module A RX wire was open | PB8 pull-up makes the bus look idle | Init OK does not prove the transceiver path works |
 | 2026-11-23 | Switched STM32 to HSE | CAN tolerates ~0.5 % clock error, HSI is ±1 % | Enable HSE in `SystemInit`, still 8 MHz so BRR/BTR unchanged |
 | 2026-11-23 | PulseView "Capture failed", ESP32 port dropped | Windows "USB device not recognized" (USB glitch) | Re-plug devices; first capture triggered on a glitch, so capture longer instead of trusting the trigger |
+| 2026-11-23 | Milestone 5: STM32 reply took 3–4 ms | Blocking UART log (44 chars × 86.8 µs at 115200 = 3.8 ms) printed *before* sending the CAN reply | Send the reply first, log after → reply < 1 ms |
+| 2026-11-23 | ESP32 sketch failed: `GPIO_NUM_25` not declared | Arduino IDE board set to ESP32-S2 (no GPIO25) | Board → ESP32 Dev Module |
