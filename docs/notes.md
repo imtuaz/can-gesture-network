@@ -15,3 +15,8 @@ Write down problems and how they were solved. This is what interviewers like to 
 | 2026-11-23 | Milestone 5: STM32 reply took 3–4 ms | Blocking UART log (44 chars × 86.8 µs at 115200 = 3.8 ms) printed *before* sending the CAN reply | Send the reply first, log after → reply < 1 ms |
 | 2026-11-23 | ESP32 sketch failed: `GPIO_NUM_25` not declared | Arduino IDE board set to ESP32-S2 (no GPIO25) | Board → ESP32 Dev Module |
 | 2026-11-23 | Milestone 6: LED toggles briefly while shaking the sensor near 0° | Tilt is computed from the accelerometer only; hand acceleration adds to gravity | Expected limitation; fuse with gyro (complementary filter) in milestone 7 |
+| 2026-11-25 | First gesture dataset: model ~78 % | Gestures too slow, peak rotation ~25 °/s vs ~10 °/s at rest | Logger rejects samples below 100 °/s and prints the peak; recollected → 97 % |
+| 2026-11-25 | `gesture_model.h` did not compile: `189f` | Python printed whole numbers without a decimal point | Always emit `189.0f`; caught by compiling a host-side C test against the Python reference |
+| 2026-11-25 | `B1` redeclared | Arduino core defines binary constants `B0`, `B1`, ... | Prefix model arrays with `NN_` |
+| 2026-11-25 | Gestures recognized but `Hang doi TX day`, no reply | Blue Pill not running (CubeIDE opened the ST-Link upgrade tool instead of flashing) | Skip the upgrade (clone ST-Link), flash; check the UART banner |
+| 2026-11-25 | `khong doc duoc MPU6050` after wearing the sensor on the hand | No I2C ACK at 0x68; wiring/solder joints stressed by fast wrist motion (open) | Added I2C/zero-reading check with re-init; hardware fix pending |
