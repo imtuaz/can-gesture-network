@@ -21,5 +21,4 @@ Write down problems and how they were solved. This is what interviewers like to 
 | 2026-11-25 | Gestures recognized but `Hang doi TX day`, no reply | Blue Pill not running (CubeIDE opened the ST-Link upgrade tool instead of flashing) | Skip the upgrade (clone ST-Link), flash; check the UART banner |
 | 2026-11-25 | `khong doc duoc MPU6050` after wearing the sensor on the hand | No I2C ACK at 0x68; wiring/solder joints stressed by fast wrist motion (open) | Added I2C/zero-reading check with re-init; hardware fix pending |
 | 2026-11-25 | Live test: right → left (69/85), idle → 26 false commands | Idle data too calm; training window aligned to button, live window aligned to motion trigger; whole-window stats lose phase order | Collect with the live trigger, idle = fast ordinary moves, 48 split-window features, evaluate on another session → 90.8 % on session 2 |
-
 | 2026-11-25 | protocol-analyzer decoded the first capture as ID 0x230 + stuff error | Capture triggered on the SOF edge: sample 0 already dominant, decoder never saw the falling edge and locked onto a later edge | Prepend 30 µs idle in sr2csv.py (a CAN frame is always preceded by ≥ 11 recessive bits) |
