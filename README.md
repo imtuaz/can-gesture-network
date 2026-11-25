@@ -29,7 +29,7 @@ becomes a CAN command.
 | 1 | STM32 blinks, prints over UART | "hello" seen in serial terminal | ✅ |
 | 2 | ESP32 TWAI in loopback mode | frame sent and received by itself | ✅ |
 | 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | ✅ STM32 prints ID + data over UART, its own TEC = REC = 0 ([log](captures/m3_stm32_uart_log.png)) |
-| 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | 🟡 decoded in PulseView ([capture](captures/m4_frame_0x123_pulseview.png)); protocol-analyzer pending |
+| 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | ✅ 30 frames decoded by [protocol-analyzer](https://github.com/imtuaz/protocol-analyzer), 0 errors, matches PulseView |
 | 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ✅ STM32 replies with LED state (0x200), round trip < 1 ms |
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ✅ STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
 | 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ✅ end-to-end over CAN; 90.8 % on an unseen wearing session, live results below |
@@ -68,6 +68,33 @@ About 80 bits (4 stuff bits) ≈ 160 µs every 100 ms → bus load ≈ 0.16 %. D
 turns the LED off and answers with 0x200 data `00`. The reply starts about **70 µs** after the 0x110 frame ends.
 D1 (STM32 TX) is silent during 0x110 except for the ACK bit, and carries the whole 0x200 frame;
 in 0x200 the ACK bit appears on D0 only, driven by the ESP32 ([zoom](captures/m6_frame_0x200_pulseview.png)).
+
+## Decoding with my own protocol-analyzer (milestone 4)
+
+The PulseView captures (`captures/*.sr`) are converted to CSV with [`tools/sr2csv.py`](tools/sr2csv.py)
+(a `.sr` file is a zip: metadata + raw samples, 1 byte per sample) and decoded by
+[protocol-analyzer](https://github.com/imtuaz/protocol-analyzer), my C99 decoder:
+
+```bash
+python tools/sr2csv.py captures/m6_tilt_2500ms.sr m6.csv
+pa analyze m6.csv can --bitrate 500000 --report report.html
+```
+```
+  48.969 ms    CAN   FRAME   ID 110   -   ID 0x110 DLC 4 | data 55 01 9E FF
+  448.964 ms   CAN   FRAME   ID 110   -   ID 0x110 DLC 4 | data 7A 13 C7 01
+  449.199 ms   CAN   FRAME   ID 200   -   ID 0x200 DLC 1 | data 01
+  ...
+  2.0490 s     CAN   FRAME   ID 110   -   ID 0x110 DLC 4 | data BC F9 AB F9
+  2.0492 s     CAN   FRAME   ID 200   -   ID 0x200 DLC 1 | data 00
+  29 events, 0 with errors
+```
+- 2.5 s capture: 25 tilt frames (one every 100 ms) + 4 STM32 replies, all CRC-15 valid
+  ([HTML report](captures/m6_tilt_2500ms_report.html)). Single-frame capture: 0x123, data AB B5.
+- Two independent decoders (PulseView's and mine) give the same IDs, data and CRC.
+- Every reply matches the STM32 hysteresis: roll 0x137A = 49.86° → LED on (`01`),
+  roll 19.40° → off, −72.52° → on, −16.04° → off.
+- The single-frame capture was triggered on the SOF edge, so its first sample is already dominant;
+  `--pad-idle-us 30` prepends idle bus so the decoder can find SOF.
 
 ## Gesture recognition (milestone 7)
 
@@ -119,6 +146,7 @@ firmware/
   node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx, m5_led_cmd, m6_tilt_rx, m7_gesture_rx
 captures/   logic analyzer captures and decoded screenshots
 data/       gesture dataset (CSV)
+tools/      sr2csv.py: PulseView .sr -> CSV for protocol-analyzer
 ```
 
 See [docs/wiring.md](docs/wiring.md) and [docs/bom.md](docs/bom.md).
