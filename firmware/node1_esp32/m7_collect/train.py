@@ -1,24 +1,29 @@
 """
 Moc 7 - buoc 2: train model nhan dang cu chi, xuat trong so ra file C
 
-Cach dung (cung thu muc voi gestures.csv):
+Cach dung (cung thu muc voi gestures_v2.csv):
     python train.py
 
 Dau ra:
-    - In do chinh xac tren tap test (25% du lieu, model chua tung thay)
+    - In do chinh xac tren tap test:
+        neu co >= 2 session: train tren cac session dau, test tren session CUOI (sat thuc te hon)
+        neu chi 1 session : test tren 25% du lieu ngau nhien
     - In ma tran nham lan (confusion matrix)
-    - Ghi gesture_model.h: trong so mang no-ron de copy vao sketch ESP32
+    - Ghi ../m7_gesture_tx/gesture_model.h: trong so mang no-ron, dat thang vao thu muc sketch ESP32
 
 Pipeline (phai giong het ben ESP32):
     1 mau = 100 dong x 6 truc (ax ay az gx gy gz), so nguyen tho
-    -> 24 dac trung: mean(6), std(6), min(6), max(6)
+    -> 48 dac trung: voi NUA DAU (mau 0-49) va NUA SAU (mau 50-99),
+       moi nua tinh mean(6), std(6), min(6), max(6)
+       (chia 2 nua de model biet pha nao cua cu chi xay ra truoc)
     -> chuan hoa: (x - mean) / scale
     -> lop an 16 no-ron, ReLU
     -> lop ra 4 no-ron -> argmax
 """
 
-import csv
 import collections
+import csv
+import os
 
 import numpy as np
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -26,7 +31,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import StandardScaler
 
-CSV_FILE = "gestures.csv"
+CSV_FILE = "gestures_v2.csv"
 LABELS = ["idle", "right", "left", "rotate"]   # vi tri = ma cu chi gui qua CAN (0..3)
 HIDDEN = 16
 
@@ -34,20 +39,29 @@ HIDDEN = 16
 def load(path):
     windows = collections.defaultdict(list)
     label_of = {}
+    session_of = {}
     with open(path, newline="") as f:
         for row in csv.DictReader(f):
             s = int(row["sample"])
             windows[s].append([int(row[k]) for k in ["ax", "ay", "az", "gx", "gy", "gz"]])
             label_of[s] = row["label"]
+            session_of[s] = row.get("session", "s1")
     ids = sorted(windows)
     X = np.array([windows[s] for s in ids], dtype=float)      # (so mau, 100, 6)
     y = np.array([LABELS.index(label_of[s]) for s in ids])    # 0..3
-    return X, y
+    sess = np.array([session_of[s] for s in ids])
+    return X, y, sess
+
+
+def stats(part):
+    """part: (n, 6) -> 24 so: mean, std ('chia N', giong ban C), min, max cua tung truc."""
+    return np.concatenate([part.mean(0), part.std(0), part.min(0), part.max(0)])
 
 
 def features(w):
-    """w: (100, 6) -> 24 so. std la do lech chuan 'chia N' (giong ban C)."""
-    return np.concatenate([w.mean(0), w.std(0), w.min(0), w.max(0)])
+    """w: (100, 6) -> 48 so: 24 cua nua dau, 24 cua nua sau."""
+    half = len(w) // 2
+    return np.concatenate([stats(w[:half]), stats(w[half:])])
 
 
 def make_model():
@@ -73,12 +87,20 @@ def c_array(name, a):
 
 
 def main():
-    X, y = load(CSV_FILE)
+    X, y, sess = load(CSV_FILE)
     F = np.array([features(w) for w in X])
     print("So mau:", {LABELS[k]: int(v) for k, v in sorted(collections.Counter(y).items())})
+    print("Session:", {str(k): int(v) for k, v in collections.Counter(sess).items()})
 
-    # 1. Danh gia: train 75%, test 25% ma model chua thay
-    Ftr, Fte, ytr, yte = train_test_split(F, y, test_size=0.25, stratify=y, random_state=0)
+    # 1. Danh gia
+    sessions = sorted(str(x) for x in set(sess))
+    if len(sessions) >= 2:
+        test_s = sessions[-1]
+        print(f"Train tren {sessions[:-1]}, test tren session '{test_s}' (lan deo model chua thay)")
+        Ftr, Fte, ytr, yte = F[sess != test_s], F[sess == test_s], y[sess != test_s], y[sess == test_s]
+    else:
+        print("Chi co 1 session: test tren 25% ngau nhien (lac quan hon thuc te)")
+        Ftr, Fte, ytr, yte = train_test_split(F, y, test_size=0.25, stratify=y, random_state=0)
     sc = StandardScaler().fit(Ftr)
     clf = make_model().fit(sc.transform(Ftr), ytr)
     pred = clf.predict(sc.transform(Fte))
@@ -96,7 +118,8 @@ def main():
     test_logits = h @ clf.coefs_[1] + clf.intercepts_[1]
 
     n_param = sum(w.size for w in clf.coefs_) + sum(b.size for b in clf.intercepts_)
-    with open("gesture_model.h", "w") as f:
+    out_h = os.path.join("..", "m7_gesture_tx", "gesture_model.h")
+    with open(out_h, "w") as f:
         f.write("/* Tu dong tao boi train.py - khong sua tay */\n")
         f.write(f"/* {len(y)} mau, {n_param} tham so, nhan: {', '.join(LABELS)} */\n\n")
         f.write(f"#define N_FEAT {F.shape[1]}\n#define N_HID {HIDDEN}\n#define N_CLASS {len(LABELS)}\n\n")
@@ -108,7 +131,7 @@ def main():
         f.write(c_array("NN_B2", clf.intercepts_[1]))      # [4]
         f.write(c_array("TEST_FEAT", test_feat))
         f.write(c_array("TEST_LOGITS", test_logits))
-    print(f"\nDa ghi gesture_model.h ({n_param} tham so)")
+    print(f"\nDa ghi {out_h} ({n_param} tham so)")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@
  *   1. Doc cam bien 100 Hz, luu 100 mau gan nhat vao bo dem vong (ring buffer)
  *   2. Khi toc do quay > 100 do/s: bat dau 1 cu chi. Doc them 70 mau
  *      -> cua so 100 mau gom 30 mau truoc luc bat dau + 70 mau sau
- *   3. Tinh 24 dac trung -> mang no-ron 24-16-4 -> cu chi co xac suat cao nhat
+ *   3. Tinh 48 dac trung (2 nua cua so) -> mang no-ron 48-16-4 -> cu chi co xac suat cao nhat
  *   4. Neu khong phai idle va xac suat >= 70%: gui ID 0x120, DLC 2
  *        byte 0 = ma cu chi (1 right, 2 left, 3 rotate), byte 1 = xac suat (%)
  *   5. Nghi 500 ms roi moi nhan cu chi tiep (tranh 1 cu chi bi dem 2 lan)
@@ -20,6 +20,10 @@
 #include <math.h>
 #include "driver/twai.h"
 #include "gesture_model.h"
+
+#if N_FEAT != 48
+#error "gesture_model.h la ban cu (24 dac trung). Chay lai train.py de tao ban 48 dac trung"
+#endif
 
 #define PIN_TX      GPIO_NUM_25
 #define PIN_RX      GPIO_NUM_26
@@ -105,28 +109,36 @@ bool read_imu(int16_t *v)
 }
 
 /* ================= Mang no-ron ================= */
-/* 24 dac trung: mean, std, min, max cua tung truc. Thu tu phai giong train.py */
-void compute_features(int16_t w[WINDOW][6], float *f)
+/* Tinh mean, std, min, max cua 6 truc tren doan [from, from + n) -> out[24]
+ * Thu tu: out[0..5] mean, out[6..11] std, out[12..17] min, out[18..23] max */
+void stats(int16_t w[WINDOW][6], int from, int n, float *out)
 {
   for (int k = 0; k < 6; k++) {
-    float sum = 0, mn = w[0][k], mx = w[0][k];
-    for (int i = 0; i < WINDOW; i++) {
+    float sum = 0, mn = w[from][k], mx = w[from][k];
+    for (int i = from; i < from + n; i++) {
       float x = w[i][k];
       sum += x;
       if (x < mn) mn = x;
       if (x > mx) mx = x;
     }
-    float mean = sum / WINDOW;
+    float mean = sum / n;
     float var = 0;
-    for (int i = 0; i < WINDOW; i++) {
+    for (int i = from; i < from + n; i++) {
       float d = w[i][k] - mean;
       var += d * d;
     }
-    f[k]      = mean;
-    f[6 + k]  = sqrtf(var / WINDOW);   /* chia N, giong numpy std */
-    f[12 + k] = mn;
-    f[18 + k] = mx;
+    out[k]      = mean;
+    out[6 + k]  = sqrtf(var / n);      /* chia N, giong numpy std */
+    out[12 + k] = mn;
+    out[18 + k] = mx;
   }
+}
+
+/* 48 dac trung: 24 cua nua dau + 24 cua nua sau. Thu tu phai giong train.py */
+void compute_features(int16_t w[WINDOW][6], float *f)
+{
+  stats(w, 0, WINDOW / 2, f);
+  stats(w, WINDOW / 2, WINDOW / 2, f + 24);
 }
 
 /* Tinh logits (diem cua 4 lop) tu 24 dac trung */
