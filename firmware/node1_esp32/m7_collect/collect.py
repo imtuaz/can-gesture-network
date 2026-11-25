@@ -2,11 +2,12 @@
 Moc 7 - buoc 1: luu du lieu cu chi tu ESP32 vao gestures.csv
 
 Cach dung (dong Serial Monitor cua Arduino IDE truoc):
-    python collect.py COM6 right
+    python collect.py COM6 right s1
 
-Nhan nhan: idle, right, left, rotate
-Moi lan nhan nut tren ESP32 = 1 mau (100 dong). Ctrl+C de dung.
-Chay lai voi nhan khac thi du lieu duoc ghi tiep vao cung file.
+Nhan: idle, right, left, rotate.   s1, s2, ... = lan deo cam bien (session).
+Moi lan: nhan BOOT, roi lam cu chi. ESP32 tu cat cua so khi tay quay > 100 do/s.
+idle = cu dong binh thuong nhung DU NHANH (gai dau, cam ly, chinh toc, vay chao).
+Ctrl+C de dung. Du lieu ghi tiep vao cung file.
 """
 
 import csv
@@ -17,11 +18,10 @@ import serial
 
 LABELS = ["idle", "right", "left", "rotate"]
 WINDOW = 100
-OUT = "gestures.csv"
+OUT = "gestures_v2.csv"
 
 GYRO_LSB_PER_DPS = 32.8   # MPU6050 o dai +-1000 do/s
-MIN_PEAK_DPS = 100        # cu chi phai quay nhanh hon muc nay moi luu
-MAX_IDLE_DPS = 150        # idle ma quay nhanh hon muc nay thi bo
+MIN_PEAK_DPS = 150        # cu chi (tru idle) phai quay nhanh hon muc nay moi luu
 
 
 def peak_gyro_dps(rows):
@@ -57,11 +57,11 @@ def count_label(path, label):
 
 
 def main():
-    if len(sys.argv) != 3 or sys.argv[2] not in LABELS:
-        print("Cach dung: python collect.py <COM> <nhan>   nhan =", ", ".join(LABELS))
+    if len(sys.argv) != 4 or sys.argv[2] not in LABELS:
+        print("Cach dung: python collect.py <COM> <nhan> <session>   nhan =", ", ".join(LABELS))
         sys.exit(1)
 
-    port, label = sys.argv[1], sys.argv[2]
+    port, label, session = sys.argv[1], sys.argv[2], sys.argv[3]
     sample_id = next_sample_id(OUT)
     done = count_label(OUT, label)
 
@@ -69,10 +69,10 @@ def main():
     f = open(OUT, "a", newline="")
     writer = csv.writer(f)
     if new_file:
-        writer.writerow(["sample", "label", "i", "ax", "ay", "az", "gx", "gy", "gz"])
+        writer.writerow(["sample", "session", "label", "i", "ax", "ay", "az", "gx", "gy", "gz"])
 
     ser = serial.Serial(port, 115200, timeout=1)
-    print(f"Dang thu nhan '{label}' (da co {done} mau). Nhan nut tren ESP32. Ctrl+C de dung.")
+    print(f"Session {session}, nhan '{label}' (da co {done} mau). Nhan BOOT roi lam cu chi. Ctrl+C de dung.")
 
     rows = None
     try:
@@ -91,12 +91,8 @@ def main():
                         print(f"  BO: dinh gyro {peak:.0f} do/s < {MIN_PEAK_DPS}. Lam nhanh, dut khoat hon")
                         rows = None
                         continue
-                    if label == "idle" and peak > MAX_IDLE_DPS:
-                        print(f"  BO: idle ma dinh gyro {peak:.0f} do/s, giong cu chi qua")
-                        rows = None
-                        continue
                     for i, v in enumerate(rows):
-                        writer.writerow([sample_id, label, i] + v)
+                        writer.writerow([sample_id, session, label, i] + v)
                     f.flush()
                     sample_id += 1
                     done += 1
