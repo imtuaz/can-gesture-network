@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>Protocol Analyzer</title><style>
+body{font-family:system-ui,sans-serif;margin:24px;color:#1c2024;background:#fcfcfd}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:28px 0 6px}
+.info{font:13px ui-monospace,monospace;background:#f0f0f3;padding:8px 10px;border-radius:6px;white-space:pre-wrap}
+.cards{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.card{background:#fff;border:1px solid #e0e1e6;border-radius:8px;padding:8px 14px}
+.card b{display:block;font-size:20px}
+.wave{overflow-x:auto;border:1px solid #e0e1e6;border-radius:8px;background:#fff;padding:6px;margin:8px 0}
+.sig{fill:none;stroke:#0d74ce;stroke-width:1.5}
+.ch{font:12px ui-monospace,monospace;fill:#60646c}
+.lab{font:11px ui-monospace,monospace;fill:#fff;text-anchor:middle}
+.tick{font:10px ui-monospace,monospace;fill:#80838d;text-anchor:middle}
+.grid{stroke:#eceef0;stroke-width:1}
+table{border-collapse:collapse;font:12px ui-monospace,monospace;margin:6px 0}
+td,th{border-bottom:1px solid #e8e8ec;padding:3px 10px;text-align:left}
+tr.bad td{background:#feebec;color:#ce2c31}
+details{margin:6px 0} summary{cursor:pointer;color:#60646c}
+</style></head><body>
+<h1>Protocol Analyzer</h1><div style='color:#60646c'>Embedded Communication Protocol Analyzer</div>
+<div class='cards'><div class='card'><b>1</b>captures</div><div class='card'><b>1</b>decoded events</div><div class='card'><b style='color:#18794e'>0</b>events with errors</div></div>
+<h2>m4done.csv</h2><div class='info'>CAN 500000 bit/s, channel 0
+Errors: none</div>
+<div class='wave'><svg width='1080' height='128' xmlns='http://www.w3.org/2000/svg'>
+<line x1='70.0' y1='0' x2='70.0' y2='102' class='grid'/><text x='70.0' y='116' class='tick'>0.00 us</text>
+<line x1='170.0' y1='0' x2='170.0' y2='102' class='grid'/><text x='170.0' y='116' class='tick'>12.503 ms</text>
+<line x1='270.0' y1='0' x2='270.0' y2='102' class='grid'/><text x='270.0' y='116' class='tick'>25.006 ms</text>
+<line x1='370.0' y1='0' x2='370.0' y2='102' class='grid'/><text x='370.0' y='116' class='tick'>37.509 ms</text>
+<line x1='470.0' y1='0' x2='470.0' y2='102' class='grid'/><text x='470.0' y='116' class='tick'>50.012 ms</text>
+<line x1='570.0' y1='0' x2='570.0' y2='102' class='grid'/><text x='570.0' y='116' class='tick'>62.515 ms</text>
+<line x1='670.0' y1='0' x2='670.0' y2='102' class='grid'/><text x='670.0' y='116' class='tick'>75.018 ms</text>
+<line x1='770.0' y1='0' x2='770.0' y2='102' class='grid'/><text x='770.0' y='116' class='tick'>87.521 ms</text>
+<line x1='870.0' y1='0' x2='870.0' y2='102' class='grid'/><text x='870.0' y='116' class='tick'>100.024 ms</text>
+<line x1='970.0' y1='0' x2='970.0' y2='102' class='grid'/><text x='970.0' y='116' class='tick'>112.527 ms</text>
+<line x1='1070.0' y1='0' x2='1070.0' y2='102' class='grid'/><text x='1070.0' y='116' class='tick'>125.030 ms</text>
+<text x='4' y='21' class='ch'>D0</text>
+<path class='sig' d='M70 6 H70.2 V28 H70.3 V6 H70.3 V28 H70.3 V6 H70.4 V28 H70.4 V6 H70.4 V28 H70.5 V6 H70.5 V28 H70.6 V6 H70.6 V28 H70.6 V6 H70.6 V28 H70.6 V6 H70.6 V28 H70.7 V6 H70.7 V28 H70.7 V6 H70.8 V28 H70.8 V6 H70.8 V28 H70.8 V6 H70.8 V28 H70.9 V6 H70.9 V28 H70.9 V6 H71.0 V28 H71.0 V6 H71.1 V28 H71.1 V6 H1070'/>
+<text x='4' y='55' class='ch'>D1</text>
+<path class='sig' d='M70 40 H71.1 V62 H71.1 V40 H1070'/>
+<text x='4' y='87' class='ch'>decode</text>
+<g><title>FRAME ID 123  ID 0x123 DLC 2 | data AB B5</title><rect x='70.2' y='70' width='3.0' height='24' rx='3' fill='#12a594' fill-opacity='0.85'/></g>
+</svg></div>
+<details><summary>Event table (1)</summary>
+<table><tr><th>#</th><th>time</th><th>type</th><th>value</th><th>errors</th><th>details</th></tr>
+<tr><td>0</td><td>30.00 us</td><td>FRAME</td><td>ID 123</td><td></td><td>ID 0x123 DLC 2 | data AB B5</td></tr>
+</table>
+</details>
+<p style='color:#80838d;font-size:12px'>Hover a box in the decode row for details. Red = protocol error, orange = timing violation.</p></body></html>
