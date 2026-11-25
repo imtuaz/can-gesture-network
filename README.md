@@ -28,7 +28,7 @@ becomes a CAN command.
 |---|------|-----------|--------|
 | 1 | STM32 blinks, prints over UART | "hello" seen in serial terminal | ✅ |
 | 2 | ESP32 TWAI in loopback mode | frame sent and received by itself | ✅ |
-| 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | ✅ STM32 ACKs every frame (ESP32 TEC = 0); UART print not yet viewed |
+| 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | ✅ STM32 prints ID + data over UART, its own TEC = REC = 0 ([log](captures/m3_stm32_uart_log.png)) |
 | 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | 🟡 decoded in PulseView ([capture](captures/m4_frame_0x123_pulseview.png)); protocol-analyzer pending |
 | 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ✅ STM32 replies with LED state (0x200), round trip < 1 ms |
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ✅ STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
