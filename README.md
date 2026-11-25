@@ -32,7 +32,7 @@ becomes a CAN command.
 | 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | 🟡 decoded in PulseView ([capture](captures/m4_frame_0x123_pulseview.png)); protocol-analyzer pending |
 | 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ✅ STM32 replies with LED state (0x200), round trip < 1 ms |
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ✅ STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
-| 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | 🟡 3 gestures + idle recognized on ESP32 (97 % test accuracy, ~130 µs/inference); end-to-end CAN test pending |
+| 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ✅ end-to-end over CAN; 90.8 % on an unseen wearing session, live results below |
 
 ## CAN message plan
 
@@ -71,19 +71,44 @@ in 0x200 the ACK bit appears on D0 only, driven by the ESP32 ([zoom](captures/m6
 
 ## Gesture recognition (milestone 7)
 
-MPU6050 taped to the back of the hand, sampled at 100 Hz (±4 g, ±1000 °/s).
+MPU6050 taped to the back of the hand (±4 g, ±1000 °/s, 100 Hz). Gestures: flick right, flick left,
+rotate the wrist, and idle (ordinary movements such as scratching the head or picking up a cup).
 
-1. `m7_collect.ino` + `collect.py`: press BOOT, perform one gesture, 1 s window (100 × 6 axes) saved to
-   [`data/gestures.csv`](data/gestures.csv). Samples with peak rotation < 100 °/s are rejected.
-2. `train.py`: 24 features (mean, std, min, max per axis) → MLP 24-16-4 (ReLU), 468 parameters.
-   Test set (25 %, 33 samples): **97 %** (1 idle predicted as right). Weights exported to `gesture_model.h`.
-3. `m7_gesture_tx.ino`: ring buffer of the last 100 samples; a gesture starts when rotation > 100 °/s,
-   window = 30 samples before + 70 after. Inference written in plain C: **~130 µs** on ESP32.
-   At boot the C model is checked against a reference vector computed in Python (max error 1e-6).
-   Result sent as `0x120` if confidence ≥ 70 %.
+**Pipeline**
+1. Window capture (same code for data collection and live use): the ESP32 keeps the last 100 samples in a
+   ring buffer; when rotation exceeds 100 °/s it takes 30 samples before + 70 after (1 s).
+2. Features: mean, std, min, max of 6 axes, computed separately for the first and second half of the window
+   → 48 values (the split tells the model which phase of the motion came first).
+3. MLP 48-16-4 (ReLU), 852 parameters, trained with scikit-learn (`train.py`), exported to `gesture_model.h`.
+4. Inference written in plain C on the ESP32: **236–267 µs**. A reference vector computed in Python is
+   checked at boot (max error ~1e-6).
+5. If the class is not idle and confidence ≥ 70 %: CAN `0x120` [gesture id, confidence %].
+   The STM32 blinks the LED (right 1×, left 2×), toggles it on rotate, and replies with `0x200`.
 
-Dataset: 132 windows (idle 34, right 36, left 29, rotate 33), one person, one session.
-About 300 gyro samples hit the ±1000 °/s limit; a ±2000 °/s range would avoid clipping.
+**Results**
+
+| Test | Result |
+|---|---|
+| Session 2 (sensor re-mounted, not used for training), 65 windows | **90.8 %** |
+| Live, session 3: rotate | 17 / 18 sent correctly (94 %) |
+| Live, session 3: idle (≈1 min of normal movement) | 21 / 25 triggers correctly ignored, 4 false commands |
+| Live, session 3: right / left, among commands sent | 16 / 23 (70 %) / 22 / 34 (65 %) |
+
+Right and left are the weak pair: a flick goes out and comes back, so the two gestures are mirror images,
+and about 140 gyro samples hit the ±1000 °/s limit. Next steps: ±2000 °/s range, more wearing sessions,
+or replace one of them with a different gesture.
+
+**What went wrong first (and why the numbers above are lower than 97 %)**
+- First model scored 97 % on a random split of one session, but live it labelled almost every right flick as left
+  and sent 26 false commands while idle.
+- Causes: idle data contained only near-still hands while live inference only runs after a fast movement;
+  training windows started at the button press but live windows started at the motion trigger;
+  mean/std/min/max over the whole window lose the order of the two phases of a flick.
+- Fixes: collect with the same trigger as live use, idle = fast ordinary movements, split-window features,
+  test on a different wearing session.
+
+Data: [`data/gestures_v2.csv`](data/gestures_v2.csv) (160 windows, 2 sessions),
+[`data/eval_live_session3.csv`](data/eval_live_session3.csv). First attempt: [`data/gestures.csv`](data/gestures.csv).
 
 ## Repository layout
 
