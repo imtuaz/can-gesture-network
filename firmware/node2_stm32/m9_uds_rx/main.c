@@ -916,6 +916,13 @@ static void handle_uds_frame(const uint8_t *d, uint32_t dlc)
     uint8_t resp[3 + 4 * DTC_COUNT];
     uint32_t rlen = uds_handle(&d[1], n, resp);
 
+    /* Gui phan hoi TRUOC, in log SAU (bai hoc moc 5): dong log ~45 ky tu o 115200 baud
+     * chiem ~4 ms UART blocking. Lan test dau in truoc -> phan hoi mat ~5.2 ms */
+    if (rlen > 0) {
+        tp_start(resp, rlen);
+        tp_poll();                               /* gui SF / FF ngay */
+    }
+
     print_time();
     print_str("UDS request SID 0x");
     uart1_send_char("0123456789ABCDEF"[d[1] >> 4]);
@@ -923,10 +930,6 @@ static void handle_uds_frame(const uint8_t *d, uint32_t dlc)
     print_str(" -> ");
     print_dec(rlen);
     print_str(" byte phan hoi\r\n");
-
-    if (rlen > 0) {
-        tp_start(resp, rlen);
-    }
 }
 
 int main(void)
