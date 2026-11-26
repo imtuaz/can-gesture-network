@@ -276,7 +276,8 @@ void handle_rx()
   if (node2_alive && millis() - node2_last_ms > NODE2_TIMEOUT_MS) {
     node2_alive = false;
     node2_state = 255;
-    node2_flags = 0;
+    /* Khong xoa node2_flags: co 0x10 (watchdog) cua STM32 giu nguyen den lan reset sau, neu xoa
+     * thi moi lan mat lien lac roi co lai deu bi in nham "WATCHDOG reset" (lan test moc 9 da gap) */
     Serial.printf("[t=%lu ms] MAT STM32: %d ms khong co 0x210\n", millis(), NODE2_TIMEOUT_MS);
   }
 }

@@ -896,6 +896,9 @@ static void tp_poll(void)
     }
 }
 
+static uint8_t  uds_log_pending = 0, uds_log_sid = 0;
+static uint32_t uds_log_len = 0;
+
 /* Frame tren 0x7E0: request (SF) hoac Flow Control */
 static void handle_uds_frame(const uint8_t *d, uint32_t dlc)
 {
@@ -916,19 +919,30 @@ static void handle_uds_frame(const uint8_t *d, uint32_t dlc)
     uint8_t resp[3 + 4 * DTC_COUNT];
     uint32_t rlen = uds_handle(&d[1], n, resp);
 
-    /* Gui phan hoi TRUOC, in log SAU (bai hoc moc 5): dong log ~45 ky tu o 115200 baud
-     * chiem ~4 ms UART blocking. Lan test dau in truoc -> phan hoi mat ~5.2 ms */
+    /* Gui phan hoi ngay. Dong log ~45 ky tu o 115200 baud chiem ~4 ms UART blocking:
+     * in truoc thi phan hoi tre ~5 ms (lan test 1); in ngay sau FF thi cac CF bi tre theo.
+     * Nen chi ghi nho, vong lap chinh in khi ISO-TP da gui xong (uds_log_poll). */
     if (rlen > 0) {
         tp_start(resp, rlen);
         tp_poll();                               /* gui SF / FF ngay */
     }
+    uds_log_sid = d[1];
+    uds_log_len = rlen;
+    uds_log_pending = 1;
+}
 
+static void uds_log_poll(void)
+{
+    if (!uds_log_pending || tp_state != TP_IDLE) {
+        return;
+    }
+    uds_log_pending = 0;
     print_time();
     print_str("UDS request SID 0x");
-    uart1_send_char("0123456789ABCDEF"[d[1] >> 4]);
-    uart1_send_char("0123456789ABCDEF"[d[1] & 0xF]);
+    uart1_send_char("0123456789ABCDEF"[uds_log_sid >> 4]);
+    uart1_send_char("0123456789ABCDEF"[uds_log_sid & 0xF]);
     print_str(" -> ");
-    print_dec(rlen);
+    print_dec(uds_log_len);
     print_str(" byte phan hoi\r\n");
 }
 
@@ -992,6 +1006,7 @@ int main(void)
         update_state();
         dtc_update();
         tp_poll();
+        uds_log_poll();
 
         /* 3. Gui trang thai moi 100 ms */
         if ((int32_t)(g_ms - next_status) >= 0) {
@@ -1002,8 +1017,8 @@ int main(void)
         }
 
         /* 4. In thong ke moi 1 s (UART blocking ~9 ms, FIFO 3 o van du vi 0x110 cach 100 ms) */
-        if ((int32_t)(g_ms - next_print) >= 0) {
-            next_print += PRINT_MS;
+        if ((int32_t)(g_ms - next_print) >= 0 && tp_state == TP_IDLE) {
+            next_print += PRINT_MS;              /* khong in khi dang gui ISO-TP (UART chan ~9 ms) */
             print_stats();
         }
 
