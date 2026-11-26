@@ -21,6 +21,8 @@
  *   c = lam sai CRC cua 1 frame
  *   k = bo qua 1 counter (gia lap mat 1 frame)
  *   i = in trang thai ngay
+ * Lenh cho STM32 (gui qua CAN 0x7E0, khong can noi PA10):
+ *   h = STM32 treo CPU (thu watchdog)   x = STM32 ngung gui 0x210   y = STM32 gui lai 0x210
  */
 
 #include <Wire.h>
@@ -40,6 +42,7 @@
 #define ID_TILT         0x110
 #define ID_LED_STATUS   0x200
 #define ID_NODE2_STATUS 0x210
+#define ID_TEST_CMD     0x7E0   /* lenh gay loi gui cho STM32 */
 
 #define PERIOD_MS           100
 #define NODE2_TIMEOUT_MS    300
@@ -254,6 +257,16 @@ void handle_rx()
 }
 
 /* ================= Lenh Serial ================= */
+void send_test_cmd(char cmd)
+{
+  twai_message_t msg = {};
+  msg.identifier = ID_TEST_CMD;
+  msg.data_length_code = 1;
+  msg.data[0] = (uint8_t)cmd;
+  bool ok = twai_transmit(&msg, 0) == ESP_OK;
+  Serial.printf(">> Gui lenh '%c' cho STM32 qua 0x7E0%s\n", cmd, ok ? "" : " (LOI: hang doi day / bus-off)");
+}
+
 void handle_serial()
 {
   while (Serial.available()) {
@@ -265,6 +278,9 @@ void handle_serial()
     case 'c': inject_crc_once = true; break;
     case 'k': inject_skip_once = true; break;
     case 'i': next_print = millis(); break;
+    case 'h': send_test_cmd('h'); break;
+    case 'x': send_test_cmd('s'); break;
+    case 'y': send_test_cmd('n'); break;
     default: break;                                /* bo qua '\r', '\n' */
     }
   }
@@ -307,6 +323,7 @@ void setup()
 
   Serial.println("\nMoc 8: 0x110 co E2E, theo doi loi bus");
   Serial.println("Lenh: n binh thuong | s im lang | f dong bang | c sai CRC | k mat 1 frame | i in");
+  Serial.println("Lenh cho STM32: h treo CPU | x STM32 im lang | y STM32 gui lai");
   last_send = millis();
   next_print = millis() + 1000;
 }

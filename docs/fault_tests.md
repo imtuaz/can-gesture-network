@@ -10,7 +10,8 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
 ## Setup
 
 - Open two terminals: ESP32 Serial Monitor (COM6) and the STM32 UART via CP2102 (COM17), both 115200.
-- **PA10 must be connected to CP2102 TX** to type STM32 commands (`s`, `n`, `h`, `r`).
+- STM32 commands can be typed on its UART (needs PA10 ← CP2102 TX) or sent from the ESP32 over CAN
+  ID `0x7E0`: ESP32 `h` → STM32 hang, `x` → STM32 stops `0x210`, `y` → resumes.
 - Logic analyzer: D0 → PB8 (STM32 RX), D1 → PB9 (STM32 TX), 8 MHz, as in milestone 4.
 - Before each test: both sides NORMAL, TEC = REC = 0.
 
@@ -26,7 +27,7 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
 | T6 | ESP32 unplugged | wires | timeout → SAFE; own 0x210 gets no ACK → TEC 128, ERROR PASSIVE, the 3 mailboxes fill (`tx ban` counts up) | — | |
 | T7 | CANH shorted to CANL (jumper, a few seconds) | jumper | bit errors (LEC "bit dominant"), BUS-OFF, ABOM recovers every few ms while the short is present → SAFE | BUS-OFF; 3 fast recoveries, then one attempt per second | |
 | T8 | Remove the short | jumper off | recovery, ERROR ACTIVE, NORMAL after 3 frames | "Phuc hoi xong sau … us" ≥ 2816 µs | |
-| T9 | STM32 software hang | STM32 `h` | IWDG reset after ~0.33–0.67 s, banner "do WATCHDOG reset" | "MAT STM32", then STM32 back with flag 0x10 | |
+| T9 | STM32 software hang | ESP32 `h` (or STM32 UART `h`) | IWDG reset after ~0.33–0.67 s, banner "do WATCHDOG reset" | "MAT STM32", then STM32 back with flag 0x10 | |
 
 ## Why some results differ (to explain in an interview)
 

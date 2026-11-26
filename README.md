@@ -44,6 +44,7 @@ becomes a CAN command.
 | `0x120` | Node 1 | 2 | gesture id (1 right, 2 left, 3 rotate), confidence % | milestone 7 |
 | `0x200` | Node 2 | 1 | LED state (after 0x100 command, or when tilt crosses threshold) | milestones 5–6 |
 | `0x110` | Node 1 | 6 | roll, pitch, alive counter (4 bit), CRC-8 SAE J1850 over ID + bytes 0..4 | milestone 8 |
+| `0x7E0` | Node 1 | 1 | test command for node 2 ('h' hang, 's' stop 0x210, 'n' resume) | milestone 8 |
 | `0x210` | Node 2 | 4 | state (0 normal, 1 degraded, 2 safe), TEC, REC, fault flags; every 100 ms | milestone 8 |
 
 Bit rate: **500 kbit/s**.
@@ -154,7 +155,7 @@ Four layers on top of the milestone 6 tilt link, without extra hardware:
    lost frames, data corrupted before it reaches the controller. Host test: `tests/test_e2e.c`.
 4. **State machine + watchdog**: NORMAL / DEGRADED / SAFE on the STM32, IWDG (~0.5 s).
 
-Faults are injected from the serial terminals (ESP32: `s f c k n`, STM32: `s h n`) and with jumpers
+Faults are injected from the serial terminals (ESP32: `s f c k n`, and `h x y` forwarded to the STM32 over CAN ID `0x7E0`) and with jumpers
 (unplugged node, CANH–CANL short). Test plan and expected results: [docs/fault_tests.md](docs/fault_tests.md).
 
 This is fault *handling* on high-speed CAN (ISO 11898-2), not the ISO 11898-3 fault-tolerant
