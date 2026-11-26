@@ -28,6 +28,7 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
 | T7 | CANH shorted to CANL (jumper, a few seconds) | jumper | bit errors (LEC "bit dominant"), BUS-OFF, ABOM recovers every few ms while the short is present → SAFE | BUS-OFF; 3 fast recoveries, then one attempt per second | ✅ ESP32: 3 recoveries ~100 ms apart, then 1 per second; STM32 reports bus-off (flag 0x08) |
 | T8 | Remove the short | jumper off | recovery, ERROR ACTIVE, NORMAL after 3 frames | "Phuc hoi xong sau … us" ≥ 2816 µs | ✅ 2895–3054 µs on a silent bus; ~9.3 ms when the STM32 was transmitting (its frames break the 11-recessive-bit sequences) |
 | T9 | STM32 software hang | ESP32 `h` (or STM32 UART `h`) | IWDG reset after ~0.33–0.67 s, banner "do WATCHDOG reset" | "MAT STM32", then STM32 back with flag 0x10 | ✅ MAT 300 ms after the last 0x210; reset ≈ 0.57 s after the hang (→ LSI ≈ 35 kHz); back on the bus ~13 ms later with flag 0x10; NORMAL 280 ms later |
+| T10 | One wire open (CANL unplugged, CANH still connected) | wire | — | Not covered by ISO 11898-2: behaviour depends on the floating CANL | ⚠️ Unstable: link kept working for ~2 s (NORMAL, TEC falling), then no ACK (TEC stuck at 147, MAT); bit errors while the contact changed (TEC up to 192, REC 8). Earlier, plugging the wires back one at a time caused 5 bus-offs |
 
 ## Why some results differ (to explain in an interview)
 
@@ -41,6 +42,11 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
   128 × 11 recessive bits. A shorted bus *is* recessive, so it recovers in ~3 ms and fails again,
   over and over. The ESP32 recovers 3 times quickly, then waits 1 s, so a permanent fault does not
   keep the node hammering the bus.
+- **T10, one wire open.** A receiver reads CANH − CANL. With CANL open, the far node sees only part of
+  the differential voltage, close to the 0.5–0.9 V threshold of the SN65HVD230, so some bits are read right
+  and some wrong. A half-broken bus causes bit errors (TEC past 128, even bus-off), which is worse than a
+  cleanly unplugged node (ACK errors only, TEC stops at 128). An ISO 11898-3 fault-tolerant transceiver
+  would switch to single-wire mode here; a high-speed transceiver cannot.
 - **T1 vs T6.** Both trip the STM32 timeout, but only T6 also raises the STM32 TEC, because in T1 the
   ESP32 CAN controller is still on the bus and ACKs every frame. The timeout alone cannot tell them
   apart; the error counters can.
