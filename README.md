@@ -1,6 +1,6 @@
 # CAN Gesture-Control Network (ESP32 + STM32)
 
-> **Status: in progress** (started Nov 2026)
+> **Status:** milestones 1–9 done (Nov 2026)
 
 A two-node CAN bus built with real transceivers:
 
@@ -26,15 +26,15 @@ becomes a CAN command.
 
 | # | Goal | Done when | Status |
 |---|------|-----------|--------|
-| 1 | STM32 blinks, prints over UART | "hello" seen in serial terminal | ✅ |
-| 2 | ESP32 TWAI in loopback mode | frame sent and received by itself | ✅ |
-| 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | ✅ STM32 prints ID + data over UART, its own TEC = REC = 0 ([log](captures/m3_stm32_uart_log.png)) |
-| 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | ✅ 30 frames decoded by [protocol-analyzer](https://github.com/imtuaz/protocol-analyzer), 0 errors, matches PulseView |
-| 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ✅ STM32 replies with LED state (0x200), round trip < 1 ms |
-| 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ✅ STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
-| 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ✅ end-to-end over CAN; 90.8 % on an unseen wearing session, live results below |
-| 8 | Fault detection and handling | injected faults detected, safe state entered and recovered ([test plan](docs/fault_tests.md)) | ✅ 10 faults tested on hardware; bus-off recovery 2.9–3.1 ms (theory 2.816 ms); found and fixed stale frames after bus-off / lost ACK |
-| 9 | UDS diagnostics over ISO-TP | tester reads and clears DTCs set by milestone 8 faults | ✅ 4 DTCs read in 3 frames (FF + 2 CF); response 0.7 ms (1 frame), 1.5 ms (2 frames) |
+| 1 | STM32 blinks, prints over UART | "hello" seen in serial terminal | Done |
+| 2 | ESP32 TWAI in loopback mode | frame sent and received by itself | Done |
+| 3 | ESP32 -> STM32 over real bus | STM32 prints received ID + data | Done: STM32 prints ID + data over UART, its own TEC = REC = 0 ([log](captures/m3_stm32_uart_log.png)) |
+| 4 | Capture and decode | logic analyzer CSV decoded by protocol-analyzer, CRC OK | Done: 30 frames decoded by [protocol-analyzer](https://github.com/imtuaz/protocol-analyzer), 0 errors, matches PulseView |
+| 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | Done: STM32 replies with LED state (0x200), round trip < 1 ms |
+| 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | Done: STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
+| 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | Done: end-to-end over CAN; 90.8 % on an unseen wearing session, live results below |
+| 8 | Fault detection and handling | injected faults detected, safe state entered and recovered ([test plan](docs/fault_tests.md)) | Done: 10 faults tested on hardware; bus-off recovery 2.9–3.1 ms (theory 2.816 ms); found and fixed stale frames after bus-off / lost ACK |
+| 9 | UDS diagnostics over ISO-TP | tester reads and clears DTCs set by milestone 8 faults | Done: 4 DTCs read in 3 frames (FF + 2 CF); response 0.7 ms (1 frame), 1.5 ms (2 frames) |
 
 ## CAN message plan
 
@@ -172,7 +172,9 @@ Four layers on top of the milestone 6 tilt link, without extra hardware:
 
 Bugs found by these tests: after recovery, frames stuck in the bxCAN mailboxes / ESP32 TX queue were sent
 first, so the peer acted on stale data (an alive counter detects repeated and lost frames, not delayed ones).
-Fixed by aborting pending mailboxes and clearing the TX queue when nothing can be delivered.
+Fixed by aborting pending mailboxes and clearing the TX queue when nothing can be delivered
+([before](captures/m8_t6_stale_frames_before_fix.png), [after](captures/m8_t6_after_fix.png)).
+One wire open: [log](captures/m8_t10_canl_open.png).
 
 Faults are injected from the serial terminals (ESP32: `s f c k n`, and `h x y` forwarded to the STM32 over CAN ID `0x7E0`) and with jumpers
 (unplugged node, CANH–CANL short). Test plan and expected results: [docs/fault_tests.md](docs/fault_tests.md).
@@ -213,6 +215,9 @@ Simplifications: DTCs live in RAM (lost on reset), no debounce/aging, no snapsho
 The first version printed a ~45-character UART log (≈ 4 ms blocking at 115200 baud) before answering,
 the same mistake as milestone 5. Printing right after the First Frame still delayed the consecutive
 frames, so the log is now printed only after ISO-TP has finished.
+
+Screenshots: [4 DTCs in 3 frames](captures/m9_uds_4dtc_3frames.png),
+[response time after the fix](captures/m9_uds_response_time.png).
 
 ## Repository layout
 

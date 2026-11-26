@@ -27,7 +27,7 @@ All parts run at **3.3 V**. Connect all GNDs together (both boards, transceivers
 | PC13 | on-board LED | |
 | PB0 | LED + 330 Ω to GND | |
 
-> ⚠️ The default CAN pins PA11/PA12 are shared with **USB** on the Blue Pill.
+> **Note:** the default CAN pins PA11/PA12 are shared with **USB** on the Blue Pill.
 > Use the remap to PB8/PB9 (`AFIO->MAPR` CAN remap 2, or "CAN_RX: PB8" in CubeMX).
 
 ## CAN bus
