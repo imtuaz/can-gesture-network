@@ -34,7 +34,7 @@ becomes a CAN command.
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ✅ STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
 | 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ✅ end-to-end over CAN; 90.8 % on an unseen wearing session, live results below |
 | 8 | Fault detection and handling | injected faults detected, safe state entered and recovered ([test plan](docs/fault_tests.md)) | ✅ 10 faults tested on hardware; bus-off recovery 2.9–3.1 ms (theory 2.816 ms); found and fixed stale frames after bus-off / lost ACK |
-| 9 | UDS diagnostics over ISO-TP | tester reads and clears DTCs set by milestone 8 faults | 🔄 firmware written, hardware test pending |
+| 9 | UDS diagnostics over ISO-TP | tester reads and clears DTCs set by milestone 8 faults | ✅ 4 DTCs read in 3 frames (FF + 2 CF); response 0.7 ms (1 frame), 1.5 ms (2 frames) |
 
 ## CAN message plan
 
@@ -199,6 +199,20 @@ ISO-TP (ISO 15765-2): First Frame → tester Flow Control → Consecutive Frames
 the three TX mailboxes send in request order; otherwise consecutive frames with the same ID could leave
 out of order. UDS logic is plain C (`firmware/common/uds_server.h`) with a host test (`tests/test_uds.c`).
 Simplifications: DTCs live in RAM (lost on reset), no debounce/aging, no snapshot data.
+
+**Results on hardware** (time = ESP32 sends the request → whole response received):
+
+| Request | Response | Frames | Time |
+|---|---|---|---|
+| `19 02 FF` after faults | 4 DTCs (U0100-87, U0100-82, U0100-83, P0606-00), 19 bytes | FF + 2 CF | 6.5 ms → fixed |
+| `19 02 FF`, 2 DTCs | 11 bytes | FF + 1 CF | **1.5 ms** (6.2 ms before the fix) |
+| `19 02 FF` after clear | `59 02 2B` (0 DTCs) | SF | **0.67 ms** (5.3 ms before) |
+| `14 FF FF FF` | `54` | SF | 0.76 ms |
+| `22 F1 90` | `7F 22 11` serviceNotSupported | SF | — |
+
+The first version printed a ~45-character UART log (≈ 4 ms blocking at 115200 baud) before answering,
+the same mistake as milestone 5. Printing right after the First Frame still delayed the consecutive
+frames, so the log is now printed only after ISO-TP has finished.
 
 ## Repository layout
 
