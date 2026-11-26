@@ -189,13 +189,15 @@ void SystemInit(void)
 static void iwdg_init(void)
 {
     DBGMCU_CR |= (1UL << 8);    /* DBG_IWDG_STOP: dung watchdog khi dang dung o breakpoint */
+    /* Phai START truoc: ghi 0xCCCC moi bat dao dong LSI. Neu ghi PR/RLR truoc khi LSI chay,
+     * co PVU/RVU trong IWDG_SR khong bao gio ve 0 -> vong cho ben duoi treo mai */
+    IWDG_KR  = 0xCCCC;          /* bat dau chay (va bat LSI), tu day khong tat duoc nua */
     IWDG_KR  = 0x5555;          /* mo khoa PR, RLR */
     IWDG_PR  = 3;               /* chia 32 */
     IWDG_RLR = 625;
-    while (IWDG_SR != 0) {      /* cho gia tri moi duoc nap */
+    while (IWDG_SR != 0) {      /* cho gia tri moi duoc nap (vai chu ky LSI) */
     }
-    IWDG_KR  = 0xAAAA;          /* nap lai bo dem */
-    IWDG_KR  = 0xCCCC;          /* bat dau chay, tu day khong tat duoc nua */
+    IWDG_KR  = 0xAAAA;          /* nap lai bo dem voi gia tri moi */
 }
 
 static void iwdg_feed(void)
