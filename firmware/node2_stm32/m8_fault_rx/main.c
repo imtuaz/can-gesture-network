@@ -390,6 +390,12 @@ static int can_send(uint32_t id, const uint8_t *data, uint32_t len)
     return 1;
 }
 
+/* Huy moi frame dang cho trong 3 mailbox (ABRQ0/1/2). Dung khi frame cu khong con dung nua */
+static void can_abort_all(void)
+{
+    CAN_TSR = (1UL << 7) | (1UL << 15) | (1UL << 23);
+}
+
 /* ================= Ten de in ================= */
 static const char *state_name(uint8_t st)
 {
@@ -463,6 +469,7 @@ static void set_led(uint8_t on)
     led_set(on);
     if (!can_send(ID_LED_STATUS, &led_state, 1)) {
         n_tx_busy++;
+        can_abort_all();
     }
 }
 
@@ -552,7 +559,7 @@ static void monitor_can_errors(void)
         /* Huy cac frame dang cho trong 3 mailbox (ABRQ0/1/2). Neu khong, sau khi phuc hoi
          * bxCAN gui lai frame CU (vi du 0x210 bao NORMAL tu truoc luc bus-off): du lieu
          * da het han. Da thay hien tuong nay khi test chap CANH-CANL. */
-        CAN_TSR = (1UL << 7) | (1UL << 15) | (1UL << 23);
+        can_abort_all();
     }
     if (g_ms - last_print < 100) {
         prev_esr_flags = flags;
@@ -658,7 +665,11 @@ static void send_status(void)
     d[2] = (uint8_t)ESR_REC(esr);
     d[3] = current_faults();
     if (!can_send(ID_NODE2_STATUS, d, 4)) {
+        /* Ca 3 mailbox dang ket (khong ai ACK -> bxCAN gui lai mai). Cac frame trong do la
+         * trang thai cu: huy di de khi bus binh thuong lai, frame dau tien gui ra la trang thai
+         * MOI NHAT (lan test T6 da thay ESP32 nhan 3 frame "NORMAL" cu sau khi cam lai day) */
         n_tx_busy++;
+        can_abort_all();
     }
 }
 
