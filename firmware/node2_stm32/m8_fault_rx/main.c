@@ -549,6 +549,10 @@ static void monitor_can_errors(void)
     if ((flags & ESR_BOFF) && !(prev_esr_flags & ESR_BOFF)) {
         n_busoff++;
         busoff_start_ms = g_ms;
+        /* Huy cac frame dang cho trong 3 mailbox (ABRQ0/1/2). Neu khong, sau khi phuc hoi
+         * bxCAN gui lai frame CU (vi du 0x210 bao NORMAL tu truoc luc bus-off): du lieu
+         * da het han. Da thay hien tuong nay khi test chap CANH-CANL. */
+        CAN_TSR = (1UL << 7) | (1UL << 15) | (1UL << 23);
     }
     if (g_ms - last_print < 100) {
         prev_esr_flags = flags;
