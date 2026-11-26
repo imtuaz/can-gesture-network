@@ -23,17 +23,18 @@
  *     co loi: bit0 timeout, bit1 loi E2E (1 s gan nhat), bit2 error passive, bit3 bus-off,
  *             bit4 lan khoi dong nay do watchdog reset
  *
- * Lenh UART (go trong terminal 115200):
+ * Lenh gay loi: go qua UART (can noi PA10), HOAC gui tu ESP32 qua CAN ID 0x7E0 byte 0 = ky tu lenh
+ * (ESP32 go h / x / y -> gui 'h' / 's' / 'n'), nen khong bat buoc noi them day PA10.
+ * Lenh:
  *   s = ngung gui 0x210 (gia lap STM32 im lang)   n = gui lai
  *   h = treo CPU (vong lap vo han) -> thu watchdog  r = xoa bo dem thong ke
  *
  * Phan cung giong moc 3-7:
  * - Clock: HSE 8 MHz, APB1 = 8 MHz. bxCAN remap PB8 = RX, PB9 = TX -> SN65HVD230
- * - USART1: PA9 TX, PA10 RX, 115200 -> CP2102 (PA10 can noi de go lenh)
+ * - USART1: PA9 TX, PA10 RX, 115200 -> CP2102 (PA10 khong bat buoc)
  * - PC13: LED (sang khi chan = 0)
  *
- * Project CubeIDE: chep main.c nay va e2e.h (vao Core/Inc). Project phai la loai Empty
- * (khong co stm32f1xx_it.c), neu khong SysTick_Handler bi dinh nghia 2 lan.
+ * Project CubeIDE: chep main.c nay va e2e.h (vao Core/Inc). Khong dung ngat nao.
  */
 
 #include <stdint.h>
@@ -66,10 +67,12 @@
 #define USART1_BRR      REG(USART1_BASE + 0x08)
 #define USART1_CR1      REG(USART1_BASE + 0x0C)
 
-/* ---------- SysTick (loi Cortex-M3) ---------- */
-#define SYST_CSR        REG(0xE000E010UL)
-#define SYST_RVR        REG(0xE000E014UL)
-#define SYST_CVR        REG(0xE000E018UL)
+/* ---------- TIM2 (dung lam dong ho ms, khong can ngat) ---------- */
+#define TIM2_CR1        REG(0x40000000UL + 0x00)
+#define TIM2_EGR        REG(0x40000000UL + 0x14)
+#define TIM2_CNT        REG(0x40000000UL + 0x24)
+#define TIM2_PSC        REG(0x40000000UL + 0x28)
+#define TIM2_ARR        REG(0x40000000UL + 0x2C)
 
 /* ---------- IWDG (watchdog doc lap, chay bang LSI ~40 kHz) ---------- */
 #define IWDG_KR         REG(0x40003000UL + 0x00)
@@ -114,6 +117,7 @@
 #define ID_TILT         0x110   /* ESP32 -> STM32: roll, pitch, counter, CRC (DLC 6) */
 #define ID_LED_STATUS   0x200   /* STM32 -> ESP32: trang thai LED */
 #define ID_NODE2_STATUS 0x210   /* STM32 -> ESP32: trang thai node, moi 100 ms */
+#define ID_TEST_CMD     0x7E0   /* ESP32 -> STM32: lenh gay loi (1 byte), thay cho go UART */
 
 #define TILT_ON         3000    /* 30.00 do -> bat LED */
 #define TILT_OFF        2500    /* 25.00 do -> tat LED */
@@ -135,19 +139,30 @@
 #define F_WDG_RESET     (1u << 4)
 
 /* ================= Dong ho 1 ms ================= */
-static volatile uint32_t g_ms = 0;
+/*
+ * TIM2 dem len 1 lan moi 1 ms (8 MHz / 8000). Khong dung ngat nen khong phu thuoc
+ * bang vector / file stm32f1xx_it.c cua project.
+ * TIM2 chi 16 bit (quay vong sau 65.5 s), nen ms_update() cong don phan chenh lech
+ * vao g_ms 32 bit. Chi can goi ms_update() it nhat 1 lan moi 65 s (vong lap goi lien tuc).
+ */
+static uint32_t g_ms = 0;
+static uint16_t last_cnt = 0;
 
-/* Ten ham nay co san trong bang vector (startup_stm32f103c8tx.s), ngat moi 1 ms */
-void SysTick_Handler(void)
+static void timebase_init(void)
 {
-    g_ms++;
+    RCC_APB1ENR |= (1UL << 0);  /* bat clock TIM2 */
+    TIM2_PSC = 8000 - 1;        /* 8 MHz / 8000 = 1 kHz */
+    TIM2_ARR = 0xFFFF;
+    TIM2_EGR = 1;               /* UG: nap PSC ngay */
+    TIM2_CNT = 0;
+    TIM2_CR1 = 1;               /* CEN: bat dau dem */
 }
 
-static void systick_init(void)
+static void ms_update(void)
 {
-    SYST_RVR = 8000 - 1;        /* 8 MHz / 8000 = 1 kHz -> 1 ms */
-    SYST_CVR = 0;
-    SYST_CSR = 7;               /* CLKSOURCE = CPU, TICKINT = 1, ENABLE = 1 */
+    uint16_t cnt = (uint16_t)TIM2_CNT;
+    g_ms += (uint16_t)(cnt - last_cnt);    /* phep tru 16 bit tu xu ly quay vong */
+    last_cnt = cnt;
 }
 
 /* ================= Clock HSE (giong moc 3) ================= */
@@ -248,6 +263,7 @@ static char uart1_poll_char(void)
 /* In "[t=12345 ms] " o dau dong log */
 static void print_time(void)
 {
+    ms_update();
     print_str("[t=");
     print_dec(g_ms);
     print_str(" ms] ");
@@ -710,7 +726,7 @@ int main(void)
     led_init();
     led_set(0);
     uart1_init();
-    systick_init();
+    timebase_init();
     print_str("\r\nBlue Pill - moc 8: phat hien va xu ly loi CAN\r\n");
     if (wdg_reset) {
         print_str("!!! Lan khoi dong nay do WATCHDOG reset (phan mem bi treo truoc do)\r\n");
@@ -728,16 +744,23 @@ int main(void)
     print_str("Lenh: s/n = tat/bat 0x210, h = treo CPU, r = xoa thong ke\r\n");
 
     iwdg_init();
+    ms_update();
     last_valid_ms = g_ms;
 
     while (1) {
         iwdg_feed();
+        ms_update();
 
         /* 1. Doc het frame trong FIFO 0 */
         while (CAN_RF0R & 0x3) {
             can_read_frame(&id, &dlc, data);
             if (id == ID_TILT) {
                 handle_tilt(data, dlc);
+            } else if (id == ID_TEST_CMD && dlc >= 1) {
+                print_str(">> Lenh qua CAN: ");
+                uart1_send_char((char)data[0]);
+                print_str("\r\n");
+                handle_uart_command((char)data[0]);
             }
         }
 
