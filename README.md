@@ -33,6 +33,7 @@ becomes a CAN command.
 | 5 | Button -> LED over CAN | pressing a button on node 1 toggles an LED on node 2 | ✅ STM32 replies with LED state (0x200), round trip < 1 ms |
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ✅ STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
 | 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ✅ end-to-end over CAN; 90.8 % on an unseen wearing session, live results below |
+| 8 | Fault detection and handling | injected faults detected, safe state entered and recovered ([test plan](docs/fault_tests.md)) | ✅ 10 faults tested on hardware; bus-off recovery 2.9–3.1 ms (theory 2.816 ms); found and fixed stale frames after bus-off / lost ACK |
 
 ## CAN message plan
 
@@ -42,6 +43,9 @@ becomes a CAN command.
 | `0x110` | Node 1 | 4 | roll, pitch (int16 little-endian, 0.01°) | milestone 6 |
 | `0x120` | Node 1 | 2 | gesture id (1 right, 2 left, 3 rotate), confidence % | milestone 7 |
 | `0x200` | Node 2 | 1 | LED state (after 0x100 command, or when tilt crosses threshold) | milestones 5–6 |
+| `0x110` | Node 1 | 6 | roll, pitch, alive counter (4 bit), CRC-8 SAE J1850 over ID + bytes 0..4 | milestone 8 |
+| `0x7E0` | Node 1 | 1 | test command for node 2 ('h' hang, 's' stop 0x210, 'n' resume) | milestone 8 |
+| `0x210` | Node 2 | 4 | state (0 normal, 1 degraded, 2 safe), TEC, REC, fault flags; every 100 ms | milestone 8 |
 
 Bit rate: **500 kbit/s**.
 
@@ -137,13 +141,50 @@ or replace one of them with a different gesture.
 Data: [`data/gestures_v2.csv`](data/gestures_v2.csv) (160 windows, 2 sessions),
 [`data/eval_live_session3.csv`](data/eval_live_session3.csv). First attempt: [`data/gestures.csv`](data/gestures.csv).
 
+## Fault detection and handling (milestone 8)
+
+Four layers on top of the milestone 6 tilt link, without extra hardware:
+
+1. **Error confinement**: both nodes read TEC/REC and the error state (active, warning, passive,
+   bus-off). Bus-off recovery: hardware ABOM on the STM32; on the ESP32, 3 fast recoveries and then
+   one per second while the fault persists.
+2. **Timeout**: no valid `0x110` for 300 ms (3 periods) → the STM32 goes to SAFE (LED off) and leaves
+   it only after 3 consecutive valid frames. The ESP32 watches the STM32 status frame `0x210` the same way.
+3. **End-to-end protection** (`firmware/common/e2e.h`, AUTOSAR-E2E-like): 4-bit alive counter +
+   CRC-8 over CAN ID and payload. Catches what CAN's CRC-15 cannot: a sender stuck on old data,
+   lost frames, data corrupted before it reaches the controller. Host test: `tests/test_e2e.c`.
+4. **State machine + watchdog**: NORMAL / DEGRADED / SAFE on the STM32, IWDG (~0.5 s).
+
+**Results on hardware** ([details](docs/fault_tests.md)):
+
+| Fault | Result |
+|---|---|
+| Corrupted CRC-8 / lost frame | frame dropped, DEGRADED for exactly 1 s / lost frame counted, still NORMAL |
+| Sender stuck on old data (valid CAN CRC) | caught by the alive counter, SAFE after 300 ms, LED off |
+| Node unplugged (no ACK) | TEC stops at 128, no bus-off, peer reported lost after 300 ms |
+| CANH–CANL short | bus-off; ESP32 recovery 2.9–3.1 ms; STM32 (ABOM) 1435 bus-offs vs ESP32 19 with the 3-fast-then-1/s strategy |
+| One wire open (CANL) | unstable link, bit errors (TEC up to 192): the limit of a high-speed transceiver |
+| STM32 firmware hang | IWDG reset after ~0.57 s, back on the bus with a watchdog flag |
+
+Bugs found by these tests: after recovery, frames stuck in the bxCAN mailboxes / ESP32 TX queue were sent
+first, so the peer acted on stale data (an alive counter detects repeated and lost frames, not delayed ones).
+Fixed by aborting pending mailboxes and clearing the TX queue when nothing can be delivered.
+
+Faults are injected from the serial terminals (ESP32: `s f c k n`, and `h x y` forwarded to the STM32 over CAN ID `0x7E0`) and with jumpers
+(unplugged node, CANH–CANL short). Test plan and expected results: [docs/fault_tests.md](docs/fault_tests.md).
+
+This is fault *handling* on high-speed CAN (ISO 11898-2), not the ISO 11898-3 fault-tolerant
+physical layer.
+
 ## Repository layout
 
 ```
 docs/       wiring, bill of materials, notes and lessons learned
 firmware/
-  node1_esp32/   Arduino sketches (ESP-IDF TWAI driver): m2_twai_loopback, m2_twai_loopback_status, m3_can_tx, m5_button_cmd, m6_tilt_tx, m7_collect (logger + train.py), m7_gesture_tx
-  node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx, m5_led_cmd, m6_tilt_rx, m7_gesture_rx
+  node1_esp32/   Arduino sketches (ESP-IDF TWAI driver): m2_twai_loopback, m2_twai_loopback_status, m3_can_tx, m5_button_cmd, m6_tilt_tx, m7_collect (logger + train.py), m7_gesture_tx, m8_fault_tx
+  node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx, m5_led_cmd, m6_tilt_rx, m7_gesture_rx, m8_fault_rx
+  common/        e2e.h (alive counter + CRC-8), shared by both nodes
+tests/      host-side C tests (gcc)
 captures/   logic analyzer captures and decoded screenshots
 data/       gesture dataset (CSV)
 tools/      sr2csv.py: PulseView .sr -> CSV for protocol-analyzer

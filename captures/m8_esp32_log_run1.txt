@@ -1,0 +1,407 @@
+[t=4038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=40 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=5038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=49 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=6038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=60 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=7038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=70 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+>> Gui lenh 'h' cho STM32 qua 0x7E0
+[t=7666 ms] MAT STM32: 300 ms khong co 0x210
+[t=7940 ms] ERROR WARNING (>= 96) | TEC=96 REC=0
+[t=7941 ms] ERROR PASSIVE (>= 128) | TEC=128 REC=0
+[t=7942 ms] ERROR ACTIVE (binh thuong) | TEC=127 REC=0
+[t=7953 ms] STM32 lien lac lai
+[t=7953 ms] STM32 trang thai: SAFE (co loi 0x10) - STM32 vua bi WATCHDOG reset
+[t=8038 ms] ESP32 RUNNING TEC=127 REC=0 hang doi=0 | gui=79 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=8232 ms] STM32 trang thai: NORMAL (co loi 0x10) - STM32 vua bi WATCHDOG reset
+   >>> STM32 bao: LED ON
+[t=9038 ms] ESP32 RUNNING TEC=117 REC=0 hang doi=0 | gui=89 loi gui=0 loi bus=19 busoff=0 | STM32: NORMAL
+[t=10038 ms] ESP32 RUNNING TEC=107 REC=0 hang doi=1 | gui=100 loi gui=0 loi bus=19 busoff=0 | STM32: NORMAL
+[t=11038 ms] ESP32 RUNNING TEC=97 REC=0 hang doi=0 | gui=109 loi gui=0 loi bus=19 busoff=0 | STM32: NORMAL
+[t=12038 ms] ESP32 RUNNING TEC=87 REC=0 hang doi=1 | gui=120 loi gui=0 loi bus=19 busoff=0 | STM32: NORMAL
+>> Gui lenh 's' cho STM32 qua 0x7E0
+[t=12632 ms] MAT STM32: 300 ms khong co 0x210
+[t=13038 ms] ESP32 RUNNING TEC=76 REC=0 hang doi=0 | gui=129 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=14038 ms] ESP32 RUNNING TEC=66 REC=0 hang doi=0 | gui=139 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=15038 ms] ESP32 RUNNING TEC=56 REC=0 hang doi=0 | gui=149 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+>> Im lang: ngung gui 0x110
+   >>> STM32 bao: LED OFF
+[t=16038 ms] ESP32 RUNNING TEC=49 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=17038 ms] ESP32 RUNNING TEC=49 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=18038 ms] ESP32 RUNNING TEC=49 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=19038 ms] ESP32 RUNNING TEC=49 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=20038 ms] ESP32 RUNNING TEC=49 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=21038 ms] ESP32 RUNNING TEC=49 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+>> Gui lenh 's' cho STM32 qua 0x7E0
+[t=22038 ms] ESP32 RUNNING TEC=48 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+>> Gui lenh 'h' cho STM32 qua 0x7E0
+[t=23038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: MAT
+[t=23558 ms] STM32 lien lac lai
+[t=23558 ms] STM32 trang thai: SAFE (co loi 0x10) - STM32 vua bi WATCHDOG reset
+[t=24038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=25038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=26038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=27038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=28038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=29038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=30038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=31038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=32038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=33038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=34038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=35038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=36038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=37038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=38038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=39038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=40038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=41038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=42038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=43038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=44038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=45038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=46038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=47038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=48038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=49038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=50038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=51038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=52038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=53038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+[t=54038 ms] ESP32 RUNNING TEC=47 REC=0 hang doi=0 | gui=156 loi gui=0 loi bus=19 busoff=0 | STM32: SAFE
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:4876
+ho 0 tail 12 room 4
+load:0x40078000,len:16532
+load:0x40080400,len:3500
+entry 0x400805b4
+
+Moc 8: 0x110 co E2E, theo doi loi bus
+Lenh: n binh thuong | s im lang | f dong bang | c sai CRC | k mat 1 frame | i in
+Lenh cho STM32: h treo CPU | x STM32 im lang | y STM32 gui lai
+[t=38 ms] STM32 lien lac lai
+[t=38 ms] STM32 trang thai: SAFE (co loi 0x01)
+[t=390 ms] STM32 trang thai: NORMAL (co loi 0x00)
+   >>> STM32 bao: LED ON
+[t=1038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=9 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=2038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=19 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=3038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=29 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=4038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=39 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=5038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=49 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=6038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=60 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=7038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=69 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=8038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=80 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=9038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=89 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=10038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=99 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=11038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=109 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=12038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=119 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+>> Bo qua 1 counter
+[t=13038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=130 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=14038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=139 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=15038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=149 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=16038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=159 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=17038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=169 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+>> Gui 1 frame sai CRC-8
+[t=17187 ms] STM32 trang thai: DEGRADED (co loi 0x02)
+[t=18038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=179 loi gui=0 loi bus=0 busoff=0 | STM32: DEGRADED
+[t=18187 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=19038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=189 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=20038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=199 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=21038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=209 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=22038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=219 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=23038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=229 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+>> Im lang: ngung gui 0x110
+[t=24038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=238 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+   >>> STM32 bao: LED OFF
+[t=24186 ms] STM32 trang thai: SAFE (co loi 0x01)
+[t=25038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=238 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+[t=26038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=238 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+[t=27038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=238 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+>> Binh thuong
+[t=27986 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=28038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=242 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+   >>> STM32 bao: LED ON
+[t=29038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=251 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=30038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=262 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=31038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=271 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+   >>> STM32 bao: LED OFF
+[t=32038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=282 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+   >>> STM32 bao: LED ON
+[t=33038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=291 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+   >>> STM32 bao: LED OFF
+   >>> STM32 bao: LED ON
+[t=34038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=301 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=35038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=312 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+>> Dong bang: gui lai frame cu
+[t=35784 ms] STM32 trang thai: DEGRADED (co loi 0x02)
+   >>> STM32 bao: LED OFF
+[t=35984 ms] STM32 trang thai: SAFE (co loi 0x03)
+[t=36038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=321 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+[t=37038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=331 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+[t=38038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=342 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+[t=39038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=351 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+[t=40038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=362 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+[t=41038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=371 loi gui=0 loi bus=0 busoff=0 | STM32: SAFE
+>> Binh thuong
+[t=41483 ms] STM32 trang thai: DEGRADED (co loi 0x02)
+   >>> STM32 bao: LED ON
+[t=42038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=381 loi gui=0 loi bus=0 busoff=0 | STM32: DEGRADED
+[t=42183 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=43038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=391 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+   >>> STM32 bao: LED OFF
+   >>> STM32 bao: LED ON
+[t=44038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=401 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=45038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=411 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=46038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=421 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=47038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=431 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=48038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=441 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=49038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=451 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=50038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=461 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=51038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=471 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=52038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=481 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=53038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=491 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=54038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=501 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=55038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=511 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=56038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=521 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=57038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=531 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=58038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=541 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=59038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=551 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=60038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=561 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=61038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=572 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=62038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=582 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=63038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=592 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=64038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=602 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=65038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=612 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=66038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=621 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=67038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=632 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=68038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=641 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=69038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=651 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=70038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=662 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=71038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=672 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=72038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=681 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=73038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=692 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=74038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=701 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=75038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=711 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=76038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=722 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=77038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=731 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=78038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=741 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=79038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=751 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=80038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=761 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=81038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=771 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=82038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=782 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=83038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=791 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=84038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=801 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=85038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=811 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=86038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=821 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=87038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=831 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=88038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=841 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=89038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=851 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=90038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=861 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=91038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=871 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=92038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=882 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+   >>> STM32 bao: LED OFF
+   >>> STM32 bao: LED ON
+[t=93038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=892 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=94038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=902 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=95038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=912 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=96038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=921 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=97038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=931 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=98038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=941 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=99038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=952 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=100038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=962 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=101038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=971 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=102038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=981 loi gui=0 loi bus=0 busoff=0 | STM32: NORMAL
+[t=102740 ms] ERROR WARNING (>= 96) | TEC=96 REC=0
+[t=102741 ms] ERROR PASSIVE (>= 128) | TEC=128 REC=0
+[t=102778 ms] BUS-OFF lan 1 -> phuc hoi ngay
+[t=102781 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=102781 ms] Phuc hoi xong sau 2914 us (ly thuyet >= 2816 us)
+[t=102793 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=102799 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=102851 ms] BUS-OFF lan 2 -> phuc hoi ngay
+[t=102854 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=102854 ms] Phuc hoi xong sau 2928 us (ly thuyet >= 2816 us)
+[t=102866 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=102873 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=102950 ms] BUS-OFF lan 3 -> phuc hoi ngay
+[t=102953 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=102953 ms] Phuc hoi xong sau 2966 us (ly thuyet >= 2816 us)
+[t=102965 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=102971 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=102975 ms] MAT STM32: 300 ms khong co 0x210
+[t=103038 ms] ESP32 RUNNING TEC=0 REC=129 hang doi=0 | gui=991 loi gui=3 loi bus=1329 busoff=3 | STM32: MAT
+[t=103059 ms] BUS-OFF lan 4 -> phuc hoi sau 1 s
+[t=104038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=992 loi gui=4 loi bus=1428 busoff=4 | STM32: MAT
+[t=104061 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=104061 ms] Phuc hoi xong sau 2957 us (ly thuyet >= 2816 us)
+[t=104073 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=104077 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=128
+[t=104245 ms] BUS-OFF lan 5 -> phuc hoi sau 1 s
+[t=105038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=1 | gui=994 loi gui=5 loi bus=2262 busoff=5 | STM32: MAT
+[t=105248 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=105248 ms] Phuc hoi xong sau 3054 us (ly thuyet >= 2816 us)
+[t=105262 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=105268 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=105367 ms] BUS-OFF lan 6 -> phuc hoi sau 1 s
+[t=106038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=995 loi gui=6 loi bus=2799 busoff=6 | STM32: MAT
+[t=106370 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=106370 ms] Phuc hoi xong sau 3044 us (ly thuyet >= 2816 us)
+[t=106383 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=106388 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=128
+[t=106449 ms] BUS-OFF lan 7 -> phuc hoi sau 1 s
+[t=107038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=996 loi gui=7 loi bus=3153 busoff=7 | STM32: MAT
+[t=107458 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=107458 ms] Phuc hoi xong sau 9294 us (ly thuyet >= 2816 us)
+   >>> STM32 bao: LED ON
+[t=107469 ms] STM32 lien lac lai
+[t=107469 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=107469 ms] STM32 trang thai: SAFE (co loi 0x08)
+[t=107873 ms] STM32 trang thai: DEGRADED (co loi 0x02)
+   >>> STM32 bao: LED ON
+[t=108038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1001 loi gui=7 loi bus=3153 busoff=7 | STM32: DEGRADED
+[t=108573 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=109038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1011 loi gui=7 loi bus=3153 busoff=7 | STM32: NORMAL
+[t=110038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1021 loi gui=7 loi bus=3153 busoff=7 | STM32: NORMAL
+[t=110187 ms] ERROR WARNING (>= 96) | TEC=0 REC=97
+[t=110191 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=128
+[t=110253 ms] BUS-OFF lan 8 -> phuc hoi sau 1 s
+[t=110374 ms] MAT STM32: 300 ms khong co 0x210
+[t=111038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1024 loi gui=8 loi bus=3517 busoff=8 | STM32: MAT
+[t=111262 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=111262 ms] Phuc hoi xong sau 9407 us (ly thuyet >= 2816 us)
+   >>> STM32 bao: LED ON
+[t=111273 ms] STM32 lien lac lai
+[t=111273 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=111273 ms] STM32 trang thai: SAFE (co loi 0x08)
+[t=111573 ms] STM32 trang thai: DEGRADED (co loi 0x04)
+[t=111640 ms] ERROR WARNING (>= 96) | TEC=96 REC=0
+[t=111641 ms] ERROR PASSIVE (>= 128) | TEC=128 REC=0
+[t=111680 ms] BUS-OFF lan 9 -> phuc hoi sau 1 s
+[t=111874 ms] MAT STM32: 300 ms khong co 0x210
+[t=112038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1028 loi gui=9 loi bus=3714 busoff=9 | STM32: MAT
+[t=112682 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=112682 ms] Phuc hoi xong sau 2895 us (ly thuyet >= 2816 us)
+[t=112697 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=112701 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=128
+[t=112759 ms] BUS-OFF lan 10 -> phuc hoi sau 1 s
+[t=113038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1029 loi gui=10 loi bus=3715 busoff=10 | STM32: MAT
+[t=113761 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=113762 ms] Phuc hoi xong sau 3030 us (ly thuyet >= 2816 us)
+[t=113776 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=113783 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=113851 ms] ERROR ACTIVE (binh thuong) | TEC=104 REC=127
+[t=113851 ms] STM32 lien lac lai
+[t=113852 ms] STM32 trang thai: DEGRADED (co loi 0x04)
+[t=113863 ms] STM32 trang thai: SAFE (co loi 0x08)
+[t=113863 ms] ERROR PASSIVE (>= 128) | TEC=127 REC=126
+[t=113863 ms] ERROR ACTIVE (binh thuong) | TEC=127 REC=126
+[t=114038 ms] ESP32 RUNNING TEC=126 REC=124 hang doi=1 | gui=1032 loi gui=10 loi bus=4099 busoff=10 | STM32: SAFE
+[t=114072 ms] STM32 trang thai: DEGRADED (co loi 0x04)
+   >>> STM32 bao: LED ON
+[t=114573 ms] ERROR PASSIVE (>= 128) | TEC=120 REC=128
+[t=114649 ms] BUS-OFF lan 11 -> phuc hoi sau 1 s
+[t=114773 ms] MAT STM32: 300 ms khong co 0x210
+[t=115038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1038 loi gui=11 loi bus=4436 busoff=11 | STM32: MAT
+[t=115652 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=115652 ms] Phuc hoi xong sau 3052 us (ly thuyet >= 2816 us)
+[t=115666 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=115672 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=115760 ms] BUS-OFF lan 12 -> phuc hoi sau 1 s
+[t=116038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1039 loi gui=12 loi bus=4915 busoff=12 | STM32: MAT
+[t=116763 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=116763 ms] Phuc hoi xong sau 3042 us (ly thuyet >= 2816 us)
+[t=116777 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=116783 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=116849 ms] BUS-OFF lan 13 -> phuc hoi sau 1 s
+[t=117038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1040 loi gui=13 loi bus=5299 busoff=13 | STM32: MAT
+[t=117852 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=117852 ms] Phuc hoi xong sau 3040 us (ly thuyet >= 2816 us)
+[t=117866 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=117873 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=117950 ms] BUS-OFF lan 14 -> phuc hoi sau 1 s
+[t=118038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1041 loi gui=14 loi bus=5732 busoff=14 | STM32: MAT
+[t=118959 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=118959 ms] Phuc hoi xong sau 9295 us (ly thuyet >= 2816 us)
+   >>> STM32 bao: LED ON
+[t=118970 ms] STM32 lien lac lai
+[t=118970 ms] STM32 trang thai: DEGRADED (co loi 0x04)
+[t=118970 ms] STM32 trang thai: SAFE (co loi 0x08)
+[t=119038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1041 loi gui=14 loi bus=5732 busoff=14 | STM32: SAFE
+[t=119371 ms] STM32 trang thai: DEGRADED (co loi 0x06)
+   >>> STM32 bao: LED ON
+[t=120038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1051 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=121038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1061 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=122038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1071 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=123038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1081 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=124038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1091 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=125038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1101 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=126038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=1112 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=127038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=1122 loi gui=14 loi bus=5732 busoff=14 | STM32: DEGRADED
+[t=127470 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=128038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=1 | gui=1132 loi gui=14 loi bus=5732 busoff=14 | STM32: NORMAL
+[t=128540 ms] ERROR WARNING (>= 96) | TEC=96 REC=0
+[t=128541 ms] ERROR PASSIVE (>= 128) | TEC=128 REC=0
+[t=128771 ms] MAT STM32: 300 ms khong co 0x210
+[t=129038 ms] ESP32 RUNNING TEC=128 REC=0 hang doi=5 | gui=1141 loi gui=14 loi bus=7961 busoff=14 | STM32: MAT
+[t=130038 ms] ESP32 RUNNING TEC=128 REC=0 hang doi=6 | gui=1142 loi gui=23 loi bus=12419 busoff=14 | STM32: MAT
+   >>> STM32 bao: LED OFF
+[t=130757 ms] STM32 lien lac lai
+[t=130757 ms] STM32 trang thai: DEGRADED (co loi 0x04)
+[t=130757 ms] STM32 trang thai: SAFE (co loi 0x08)
+[t=130770 ms] STM32 trang thai: NORMAL (co loi 0x00)
+   >>> STM32 bao: LED ON
+   >>> STM32 bao: LED OFF
+[t=130908 ms] STM32 trang thai: SAFE (co loi 0x08)
+[t=131038 ms] ESP32 RUNNING TEC=152 REC=0 hang doi=1 | gui=1145 loi gui=31 loi bus=15657 busoff=14 | STM32: SAFE
+[t=131170 ms] STM32 trang thai: NORMAL (co loi 0x00)
+   >>> STM32 bao: LED ON
+[t=132038 ms] ESP32 RUNNING TEC=144 REC=0 hang doi=2 | gui=1154 loi gui=31 loi bus=16551 busoff=14 | STM32: NORMAL
+[t=132070 ms] MAT STM32: 300 ms khong co 0x210
+[t=133038 ms] ESP32 RUNNING TEC=144 REC=0 hang doi=6 | gui=1158 loi gui=37 loi bus=21009 busoff=14 | STM32: MAT
+[t=134038 ms] ESP32 RUNNING TEC=144 REC=0 hang doi=6 | gui=1158 loi gui=47 loi bus=25467 busoff=14 | STM32: MAT
+[t=135038 ms] ESP32 RUNNING TEC=144 REC=0 hang doi=6 | gui=1158 loi gui=57 loi bus=29924 busoff=14 | STM32: MAT
+[t=136038 ms] ESP32 RUNNING TEC=144 REC=0 hang doi=6 | gui=1158 loi gui=67 loi bus=34382 busoff=14 | STM32: MAT
+[t=137038 ms] ESP32 RUNNING TEC=144 REC=0 hang doi=6 | gui=1158 loi gui=77 loi bus=38839 busoff=14 | STM32: MAT
+[t=138038 ms] ESP32 RUNNING TEC=144 REC=0 hang doi=6 | gui=1158 loi gui=87 loi bus=43297 busoff=14 | STM32: MAT
+[t=138236 ms] BUS-OFF lan 1 -> phuc hoi ngay
+[t=138239 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=138239 ms] Phuc hoi xong sau 2928 us (ly thuyet >= 2816 us)
+[t=138251 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=138258 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=138357 ms] BUS-OFF lan 2 -> phuc hoi ngay
+[t=138360 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=138360 ms] Phuc hoi xong sau 3021 us (ly thuyet >= 2816 us)
+[t=138372 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=138378 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=138452 ms] BUS-OFF lan 3 -> phuc hoi ngay
+[t=138455 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=138455 ms] Phuc hoi xong sau 2921 us (ly thuyet >= 2816 us)
+[t=138467 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=138474 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=138554 ms] BUS-OFF lan 4 -> phuc hoi sau 1 s
+[t=139038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1161 loi gui=93 loi bus=45594 busoff=18 | STM32: MAT
+[t=139557 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=139557 ms] Phuc hoi xong sau 3042 us (ly thuyet >= 2816 us)
+[t=139571 ms] ERROR WARNING (>= 96) | TEC=0 REC=96
+[t=139577 ms] ERROR PASSIVE (>= 128) | TEC=0 REC=129
+[t=139662 ms] BUS-OFF lan 5 -> phuc hoi sau 1 s
+[t=140038 ms] ESP32 BUS-OFF TEC=128 REC=0 hang doi=0 | gui=1162 loi gui=94 loi bus=46066 busoff=19 | STM32: MAT
+[t=140671 ms] ERROR ACTIVE (binh thuong) | TEC=0 REC=0
+[t=140671 ms] Phuc hoi xong sau 9336 us (ly thuyet >= 2816 us)
+   >>> STM32 bao: LED ON
+[t=140682 ms] STM32 lien lac lai
+[t=140682 ms] STM32 trang thai: DEGRADED (co loi 0x04)
+[t=140682 ms] STM32 trang thai: SAFE (co loi 0x08)
+[t=141038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1165 loi gui=94 loi bus=46066 busoff=19 | STM32: SAFE
+[t=141068 ms] STM32 trang thai: DEGRADED (co loi 0x02)
+   >>> STM32 bao: LED ON
+[t=141768 ms] STM32 trang thai: NORMAL (co loi 0x00)
+[t=142038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1175 loi gui=94 loi bus=46066 busoff=19 | STM32: NORMAL
+   >>> STM32 bao: LED OFF
+   >>> STM32 bao: LED ON
+[t=143038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1185 loi gui=94 loi bus=46066 busoff=19 | STM32: NORMAL
+[t=144038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1195 loi gui=94 loi bus=46066 busoff=19 | STM32: NORMAL
+[t=145038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1205 loi gui=94 loi bus=46066 busoff=19 | STM32: NORMAL
+[t=146038 ms] ESP32 RUNNING TEC=0 REC=0 hang doi=0 | gui=1215 loi gui=94 loi bus=46066 busoff=19 | STM32: NORMAL
