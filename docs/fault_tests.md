@@ -22,7 +22,7 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
 | T1 | ESP32 software stops sending | ESP32 `s`, later `n` | SAFE ~300 ms after the last 0x110, LED off; back to NORMAL after 3 valid frames (~300 ms). TEC stays 0 (ESP32 hardware still ACKs) | — | ✅ SAFE + LED off, NORMAL ~300 ms after `n`, ESP32 TEC 0 |
 | T2 | Corrupted payload | ESP32 `c` | 1 frame dropped (`crc=1`), DEGRADED for 1 s, LED not affected | — | ✅ DEGRADED 17187 → NORMAL 18187 ms (1000 ms) |
 | T3 | Sender stuck on old data | ESP32 `f`, later `n` | `lap` counts up, no valid data → SAFE after 300 ms. Without E2E the STM32 would keep acting on stale data | — | ✅ DEGRADED (0x02) on the first repeat, SAFE (0x03) 200 ms later, LED off; after `n`: DEGRADED until 1 s after the last E2E error, then NORMAL |
-| T4 | One frame lost | ESP32 `k` | `E2E: mat 1 frame`, frame still used, stays NORMAL | — | stays NORMAL ✅ (STM32 log not captured yet) |
+| T4 | One frame lost | ESP32 `k` | `E2E: mat 1 frame`, frame still used, stays NORMAL | — | ✅ STM32: `E2E: mat 1 frame (van dung frame nay)`, lost counter 6 → 7, stays NORMAL ([screenshot](../captures/m8_stm32_uart_t4.png)) |
 | T5 | STM32 unplugged (pull CANH+CANL of node 2) | wires | — | ACK errors: TEC rises to 128 → ERROR PASSIVE and **stops at 128, no bus-off**; "MAT STM32" after 300 ms | ✅ (STM32 held in reset / not running): TEC stays 128, TX queue 6, ~4 450 bus errors/s, busoff = 0; after the ACK returns TEC −1 per frame (−10/s) |
 | T6 | ESP32 unplugged | wires | timeout → SAFE; own 0x210 gets no ACK → TEC 128, ERROR PASSIVE, the 3 mailboxes fill (`tx ban` counts up) | — | ESP32 side ✅ (TEC 128, queue 6, MAT, no bus-off). Found stale frames after re-plugging, see below |
 | T7 | CANH shorted to CANL (jumper, a few seconds) | jumper | bit errors (LEC "bit dominant"), BUS-OFF, ABOM recovers every few ms while the short is present → SAFE | BUS-OFF; 3 fast recoveries, then one attempt per second | ✅ ESP32: 3 recoveries ~100 ms apart, then 1 per second; STM32 reports bus-off (flag 0x08) |
@@ -78,3 +78,6 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
   so E2E could not tell they were old. An alive counter detects repeated and lost frames, not delayed ones.
   Fix: when nothing can be queued (no ACK), the STM32 aborts its mailboxes and the ESP32 clears its TX
   queue, so the first frame after the fault is fresh data.
+- **ABOM vs. a recovery strategy, in numbers.** After the CANH–CANL short tests the STM32 counted
+  **1435 bus-offs** (hardware ABOM recovers in ~3 ms and fails again while the fault is present), while the
+  ESP32, with 3 fast recoveries and then one per second, counted 19 over the same tests.
