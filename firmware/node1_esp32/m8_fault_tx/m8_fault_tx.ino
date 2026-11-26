@@ -1,0 +1,340 @@
+/*
+ * Moc 8 - phia ESP32: gui goc nghieng co bao ve E2E, theo doi loi bus, gay loi co chu dich
+ *
+ * MPU6050: SDA = G21, SCL = G22. TWAI: G25 = TX -> CTX, G26 = RX <- CRX (module B), 500 kbit/s
+ * e2e.h (chep tu firmware/common) dat cung thu muc voi file .ino nay.
+ *
+ * Gui:  0x110 DLC 6 moi 100 ms: roll (int16 LE, 0.01 do), pitch, alive counter, CRC-8
+ * Nhan: 0x210 moi 100 ms tu STM32 [trang thai, TEC, REC, co loi] -> qua 300 ms khong thay
+ *       thi bao "mat STM32". 0x200: trang thai LED.
+ *
+ * Xu ly bus-off (chien luoc phuc hoi 2 muc, giong cach ECU that lam):
+ *   - 3 lan bus-off dau: phuc hoi ngay (twai_initiate_recovery)
+ *   - tu lan thu 4 (trong vong 5 s): cho 1 s roi moi phuc hoi, tranh lam nghen bus
+ *     khi loi van con (vi du day van dang bi chap)
+ *   Phuc hoi = controller phai thay 128 lan x 11 bit lan = 1408 bit = 2.816 ms o 500 kbit/s.
+ *
+ * Lenh qua Serial Monitor (115200, go 1 ky tu roi Enter):
+ *   n = binh thuong (tat moi loi gia lap)
+ *   s = im lang: ngung gui 0x110 (phan mem bi "treo" nhung bo CAN van ACK)
+ *   f = dong bang: gui lai y nguyen frame cu (counter khong tang)
+ *   c = lam sai CRC cua 1 frame
+ *   k = bo qua 1 counter (gia lap mat 1 frame)
+ *   i = in trang thai ngay
+ */
+
+#include <Wire.h>
+#include <math.h>
+#include "driver/twai.h"
+#include "e2e.h"
+
+#define PIN_TX      GPIO_NUM_25
+#define PIN_RX      GPIO_NUM_26
+#define PIN_SDA     21
+#define PIN_SCL     22
+
+#define MPU_ADDR        0x68
+#define MPU_PWR_MGMT_1  0x6B
+#define MPU_ACCEL_XOUT  0x3B
+
+#define ID_TILT         0x110
+#define ID_LED_STATUS   0x200
+#define ID_NODE2_STATUS 0x210
+
+#define PERIOD_MS           100
+#define NODE2_TIMEOUT_MS    300
+#define FAST_RECOVERIES     3
+#define SLOW_RECOVERY_MS    1000
+#define BUSOFF_FORGET_MS    5000
+
+/* Che do gay loi */
+enum { INJ_NONE, INJ_SILENT, INJ_FREEZE };
+int inject = INJ_NONE;
+bool inject_crc_once = false;
+bool inject_skip_once = false;
+
+uint8_t tx_counter = 0;
+uint8_t last_frame[8];
+bool have_last_frame = false;
+unsigned long last_send = 0;
+
+/* Bus-off */
+bool bus_off = false;
+bool recovering = false;
+int busoff_recent = 0;
+unsigned long busoff_ms = 0;
+unsigned long recover_at_ms = 0;
+unsigned long recover_start_us = 0;
+uint32_t n_busoff = 0;
+
+/* Thong ke */
+uint32_t n_sent = 0, n_tx_fail = 0, n_bus_err = 0, n_queue_full = 0;
+
+/* STM32 */
+unsigned long node2_last_ms = 0;
+bool node2_alive = false;
+uint8_t node2_state = 255;
+uint8_t node2_flags = 0;
+const char *ST_NAMES[3] = {"NORMAL", "DEGRADED", "SAFE"};
+
+unsigned long next_print = 0;
+
+/* ================= MPU6050 ================= */
+bool mpu_write(uint8_t reg, uint8_t value)
+{
+  Wire.beginTransmission(MPU_ADDR);
+  Wire.write(reg);
+  Wire.write(value);
+  return Wire.endTransmission() == 0;
+}
+
+bool mpu_read_accel(int16_t *ax, int16_t *ay, int16_t *az)
+{
+  uint8_t b[6];
+  Wire.beginTransmission(MPU_ADDR);
+  Wire.write(MPU_ACCEL_XOUT);
+  if (Wire.endTransmission(false) != 0) {
+    return false;
+  }
+  if (Wire.requestFrom((uint8_t)MPU_ADDR, (uint8_t)6) != 6) {
+    return false;
+  }
+  for (int i = 0; i < 6; i++) {
+    b[i] = Wire.read();
+  }
+  *ax = (int16_t)((b[0] << 8) | b[1]);
+  *ay = (int16_t)((b[2] << 8) | b[3]);
+  *az = (int16_t)((b[4] << 8) | b[5]);
+  /* Ca 3 truc = 0 -> MPU6050 vua mat dien, dang ngu -> coi nhu loi va danh thuc lai */
+  if (*ax == 0 && *ay == 0 && *az == 0) {
+    mpu_write(MPU_PWR_MGMT_1, 0x00);
+    return false;
+  }
+  return true;
+}
+
+/* ================= Gui 0x110 ================= */
+void send_tilt()
+{
+  twai_message_t msg = {};
+  msg.identifier = ID_TILT;
+  msg.data_length_code = 6;
+
+  if (inject == INJ_FREEZE && have_last_frame) {
+    memcpy(msg.data, last_frame, 6);               /* gui lai y nguyen: counter dung yen */
+  } else {
+    int16_t ax, ay, az;
+    if (!mpu_read_accel(&ax, &ay, &az)) {
+      /* Cam bien hong -> khong gui. Ben nhan se timeout va vao SAFE:
+       * khong co du lieu tot thi im lang, con hon gui du lieu sai */
+      static unsigned long last_warn = 0;
+      if (millis() - last_warn > 1000) {
+        Serial.println("LOI: khong doc duoc MPU6050 -> khong gui 0x110");
+        last_warn = millis();
+      }
+      return;
+    }
+    float roll  = atan2f((float)ay, (float)az) * 180.0f / PI;
+    float pitch = atan2f(-(float)ax, sqrtf((float)ay * ay + (float)az * az)) * 180.0f / PI;
+    int16_t r = (int16_t)lroundf(roll * 100.0f);
+    int16_t p = (int16_t)lroundf(pitch * 100.0f);
+    msg.data[0] = (uint8_t)(r & 0xFF);
+    msg.data[1] = (uint8_t)((r >> 8) & 0xFF);
+    msg.data[2] = (uint8_t)(p & 0xFF);
+    msg.data[3] = (uint8_t)((p >> 8) & 0xFF);
+
+    if (inject_skip_once) {                        /* "mat" 1 frame: tang counter ma khong gui */
+      tx_counter = (tx_counter + 1) & 0x0F;
+      inject_skip_once = false;
+      Serial.println(">> Bo qua 1 counter");
+    }
+    e2e_protect(ID_TILT, msg.data, 4, &tx_counter);
+    memcpy(last_frame, msg.data, 6);
+    have_last_frame = true;
+  }
+
+  if (inject_crc_once) {
+    msg.data[5] ^= 0x01;                           /* lat 1 bit cua CRC-8 */
+    inject_crc_once = false;
+    Serial.println(">> Gui 1 frame sai CRC-8");
+  }
+
+  esp_err_t e = twai_transmit(&msg, 0);
+  if (e == ESP_OK) {
+    n_sent++;
+  } else {
+    n_tx_fail++;                                   /* hang doi day, hoac dang bus-off */
+  }
+}
+
+/* ================= Alerts cua TWAI ================= */
+void print_counters(const char *what)
+{
+  twai_status_info_t s;
+  twai_get_status_info(&s);
+  Serial.printf("[t=%lu ms] %s | TEC=%lu REC=%lu\n", millis(), what,
+                s.tx_error_counter, s.rx_error_counter);
+}
+
+void handle_alerts()
+{
+  uint32_t a;
+  if (twai_read_alerts(&a, 0) != ESP_OK) {
+    return;                                        /* khong co alert moi */
+  }
+
+  if (a & TWAI_ALERT_BUS_ERROR)       n_bus_err++;
+  if (a & TWAI_ALERT_TX_FAILED)       n_tx_fail++;
+  if (a & TWAI_ALERT_RX_QUEUE_FULL)   n_queue_full++;
+
+  if (a & TWAI_ALERT_ABOVE_ERR_WARN)  print_counters("ERROR WARNING (>= 96)");
+  if (a & TWAI_ALERT_ERR_PASS)        print_counters("ERROR PASSIVE (>= 128)");
+  if (a & TWAI_ALERT_ERR_ACTIVE)      print_counters("ERROR ACTIVE (binh thuong)");
+
+  if (a & TWAI_ALERT_BUS_OFF) {
+    bus_off = true;
+    n_busoff++;
+    if (millis() - busoff_ms > BUSOFF_FORGET_MS) {
+      busoff_recent = 0;                           /* lau roi moi bi lai: tinh lai tu dau */
+    }
+    busoff_recent++;
+    busoff_ms = millis();
+    recover_at_ms = millis() + (busoff_recent <= FAST_RECOVERIES ? 0 : SLOW_RECOVERY_MS);
+    Serial.printf("[t=%lu ms] BUS-OFF lan %d -> phuc hoi %s\n", millis(), busoff_recent,
+                  busoff_recent <= FAST_RECOVERIES ? "ngay" : "sau 1 s");
+  }
+
+  if (a & TWAI_ALERT_BUS_RECOVERED) {
+    unsigned long dt = micros() - recover_start_us;
+    bus_off = false;
+    recovering = false;
+    twai_start();                                  /* sau phuc hoi controller o STOPPED */
+    Serial.printf("[t=%lu ms] Phuc hoi xong sau %lu us (ly thuyet >= 2816 us)\n", millis(), dt);
+  }
+}
+
+void handle_busoff_recovery()
+{
+  if (bus_off && !recovering && (long)(millis() - recover_at_ms) >= 0) {
+    if (twai_initiate_recovery() == ESP_OK) {
+      recovering = true;
+      recover_start_us = micros();
+    }
+  }
+}
+
+/* ================= Nhan ================= */
+void handle_rx()
+{
+  twai_message_t rx;
+  while (twai_receive(&rx, 0) == ESP_OK) {
+    if (rx.identifier == ID_NODE2_STATUS && rx.data_length_code >= 4) {
+      node2_last_ms = millis();
+      if (!node2_alive) {
+        node2_alive = true;
+        Serial.printf("[t=%lu ms] STM32 lien lac lai\n", millis());
+      }
+      if (rx.data[0] != node2_state && rx.data[0] < 3) {
+        Serial.printf("[t=%lu ms] STM32 trang thai: %s (co loi 0x%02X)%s\n", millis(),
+                      ST_NAMES[rx.data[0]], rx.data[3],
+                      (rx.data[3] & 0x10) ? " - STM32 vua bi WATCHDOG reset" : "");
+      }
+      node2_state = rx.data[0];
+      node2_flags = rx.data[3];
+    } else if (rx.identifier == ID_LED_STATUS && rx.data_length_code >= 1) {
+      Serial.printf("   >>> STM32 bao: LED %s\n", rx.data[0] ? "ON" : "OFF");
+    }
+  }
+
+  if (node2_alive && millis() - node2_last_ms > NODE2_TIMEOUT_MS) {
+    node2_alive = false;
+    node2_state = 255;
+    Serial.printf("[t=%lu ms] MAT STM32: %d ms khong co 0x210\n", millis(), NODE2_TIMEOUT_MS);
+  }
+}
+
+/* ================= Lenh Serial ================= */
+void handle_serial()
+{
+  while (Serial.available()) {
+    char c = Serial.read();
+    switch (c) {
+    case 'n': inject = INJ_NONE;   Serial.println(">> Binh thuong"); break;
+    case 's': inject = INJ_SILENT; Serial.println(">> Im lang: ngung gui 0x110"); break;
+    case 'f': inject = INJ_FREEZE; Serial.println(">> Dong bang: gui lai frame cu"); break;
+    case 'c': inject_crc_once = true; break;
+    case 'k': inject_skip_once = true; break;
+    case 'i': next_print = millis(); break;
+    default: break;                                /* bo qua '\r', '\n' */
+    }
+  }
+}
+
+void print_status()
+{
+  twai_status_info_t s;
+  twai_get_status_info(&s);
+  const char *st = (s.state == TWAI_STATE_RUNNING)    ? "RUNNING"
+                 : (s.state == TWAI_STATE_BUS_OFF)    ? "BUS-OFF"
+                 : (s.state == TWAI_STATE_RECOVERING) ? "RECOVERING" : "STOPPED";
+  Serial.printf("[t=%lu ms] ESP32 %s TEC=%lu REC=%lu hang doi=%lu | gui=%lu loi gui=%lu "
+                "loi bus=%lu busoff=%lu | STM32: %s\n",
+                millis(), st, s.tx_error_counter, s.rx_error_counter, s.msgs_to_tx,
+                n_sent, n_tx_fail, n_bus_err, n_busoff,
+                node2_alive && node2_state < 3 ? ST_NAMES[node2_state] : "MAT");
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  Wire.begin(PIN_SDA, PIN_SCL, 400000);
+  if (!mpu_write(MPU_PWR_MGMT_1, 0x00)) {
+    Serial.println("Canh bao: khong thay MPU6050 (se khong gui 0x110 cho den khi doc duoc)");
+  }
+
+  twai_general_config_t g = TWAI_GENERAL_CONFIG_DEFAULT(PIN_TX, PIN_RX, TWAI_MODE_NORMAL);
+  g.alerts_enabled = TWAI_ALERT_ERR_PASS | TWAI_ALERT_BUS_OFF | TWAI_ALERT_BUS_RECOVERED |
+                     TWAI_ALERT_ERR_ACTIVE | TWAI_ALERT_ABOVE_ERR_WARN | TWAI_ALERT_BUS_ERROR |
+                     TWAI_ALERT_TX_FAILED | TWAI_ALERT_RX_QUEUE_FULL;
+  twai_timing_config_t t = TWAI_TIMING_CONFIG_500KBITS();
+  twai_filter_config_t f = TWAI_FILTER_CONFIG_ACCEPT_ALL();
+  if (twai_driver_install(&g, &t, &f) != ESP_OK || twai_start() != ESP_OK) {
+    Serial.println("Loi khoi dong TWAI");
+    while (1) {
+      delay(1000);
+    }
+  }
+
+  Serial.println("\nMoc 8: 0x110 co E2E, theo doi loi bus");
+  Serial.println("Lenh: n binh thuong | s im lang | f dong bang | c sai CRC | k mat 1 frame | i in");
+  last_send = millis();
+  next_print = millis() + 1000;
+}
+
+void loop()
+{
+  /* 1. Moi 100 ms gui 0x110 (tru khi dang gia lap im lang hoac bus-off) */
+  if (millis() - last_send >= PERIOD_MS) {
+    last_send += PERIOD_MS;
+    if (inject != INJ_SILENT && !bus_off) {
+      send_tilt();
+    }
+  }
+
+  handle_rx();
+  handle_alerts();
+  handle_busoff_recovery();
+  handle_serial();
+
+  /* Du phong: neu controller dung ma khong phai do dang phuc hoi -> chay lai */
+  twai_status_info_t s;
+  twai_get_status_info(&s);
+  if (s.state == TWAI_STATE_STOPPED && !bus_off) {
+    twai_start();
+  }
+
+  if ((long)(millis() - next_print) >= 0) {
+    next_print = millis() + 1000;
+    print_status();
+  }
+}
