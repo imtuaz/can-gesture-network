@@ -34,6 +34,7 @@ becomes a CAN command.
 | 6 | MPU6050 tilt -> CAN | tilt angle sent every 100 ms | ✅ STM32 LED on at \|roll\| > 30°, off < 25° (hysteresis) |
 | 7 | Gesture recognition (TinyML) | ≥ 3 gestures recognized on ESP32 and sent as CAN commands | ✅ end-to-end over CAN; 90.8 % on an unseen wearing session, live results below |
 | 8 | Fault detection and handling | injected faults detected, safe state entered and recovered ([test plan](docs/fault_tests.md)) | ✅ 10 faults tested on hardware; bus-off recovery 2.9–3.1 ms (theory 2.816 ms); found and fixed stale frames after bus-off / lost ACK |
+| 9 | UDS diagnostics over ISO-TP | tester reads and clears DTCs set by milestone 8 faults | ✅ 4 DTCs read in 3 frames (FF + 2 CF); response 0.7 ms (1 frame), 1.5 ms (2 frames) |
 
 ## CAN message plan
 
@@ -45,6 +46,9 @@ becomes a CAN command.
 | `0x200` | Node 2 | 1 | LED state (after 0x100 command, or when tilt crosses threshold) | milestones 5–6 |
 | `0x110` | Node 1 | 6 | roll, pitch, alive counter (4 bit), CRC-8 SAE J1850 over ID + bytes 0..4 | milestone 8 |
 | `0x7E0` | Node 1 | 1 | test command for node 2 ('h' hang, 's' stop 0x210, 'n' resume) | milestone 8 |
+| `0x7F0` | Node 1 | 1 | same test command, moved here in milestone 9 | milestone 9 |
+| `0x7E0` | Node 1 | 8 | UDS request / ISO-TP Flow Control (tester → ECU) | milestone 9 |
+| `0x7E8` | Node 2 | 8 | UDS response, ISO-TP single / first / consecutive frames (ECU → tester) | milestone 9 |
 | `0x210` | Node 2 | 4 | state (0 normal, 1 degraded, 2 safe), TEC, REC, fault flags; every 100 ms | milestone 8 |
 
 Bit rate: **500 kbit/s**.
@@ -176,14 +180,48 @@ Faults are injected from the serial terminals (ESP32: `s f c k n`, and `h x y` f
 This is fault *handling* on high-speed CAN (ISO 11898-2), not the ISO 11898-3 fault-tolerant
 physical layer.
 
+## UDS diagnostics (milestone 9)
+
+The STM32 acts as an ECU (UDS server, ISO 14229) and the ESP32 as a diagnostic tester.
+Faults detected in milestone 8 are stored as DTCs:
+
+| DTC | Raw | Set when |
+|---|---|---|
+| U0100-87 | `C1 00 87` | tilt frame 0x110 missing for 300 ms |
+| U0100-82 | `C1 00 82` | E2E alive counter repeated / jumped |
+| U0100-83 | `C1 00 83` | E2E CRC-8 wrong |
+| U0001-88 | `C0 01 88` | bus-off |
+| P0606-00 | `06 06 00` | ECU restarted by the watchdog |
+
+Services: `19 01` count DTCs, `19 02` list DTCs with status, `14 FF FF FF` clear, `3E 00` tester present,
+negative responses `7F SID NRC`. A response longer than 7 bytes (up to 23 bytes for 5 DTCs) is sent with
+ISO-TP (ISO 15765-2): First Frame → tester Flow Control → Consecutive Frames. The bxCAN `TXFP` bit is set so
+the three TX mailboxes send in request order; otherwise consecutive frames with the same ID could leave
+out of order. UDS logic is plain C (`firmware/common/uds_server.h`) with a host test (`tests/test_uds.c`).
+Simplifications: DTCs live in RAM (lost on reset), no debounce/aging, no snapshot data.
+
+**Results on hardware** (time = ESP32 sends the request → whole response received):
+
+| Request | Response | Frames | Time |
+|---|---|---|---|
+| `19 02 FF` after faults | 4 DTCs (U0100-87, U0100-82, U0100-83, P0606-00), 19 bytes | FF + 2 CF | 6.5 ms → fixed |
+| `19 02 FF`, 2 DTCs | 11 bytes | FF + 1 CF | **1.5 ms** (6.2 ms before the fix) |
+| `19 02 FF` after clear | `59 02 2B` (0 DTCs) | SF | **0.67 ms** (5.3 ms before) |
+| `14 FF FF FF` | `54` | SF | 0.76 ms |
+| `22 F1 90` | `7F 22 11` serviceNotSupported | SF | — |
+
+The first version printed a ~45-character UART log (≈ 4 ms blocking at 115200 baud) before answering,
+the same mistake as milestone 5. Printing right after the First Frame still delayed the consecutive
+frames, so the log is now printed only after ISO-TP has finished.
+
 ## Repository layout
 
 ```
 docs/       wiring, bill of materials, notes and lessons learned
 firmware/
-  node1_esp32/   Arduino sketches (ESP-IDF TWAI driver): m2_twai_loopback, m2_twai_loopback_status, m3_can_tx, m5_button_cmd, m6_tilt_tx, m7_collect (logger + train.py), m7_gesture_tx, m8_fault_tx
-  node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx, m5_led_cmd, m6_tilt_rx, m7_gesture_rx, m8_fault_rx
-  common/        e2e.h (alive counter + CRC-8), shared by both nodes
+  node1_esp32/   Arduino sketches (ESP-IDF TWAI driver): m2_twai_loopback, m2_twai_loopback_status, m3_can_tx, m5_button_cmd, m6_tilt_tx, m7_collect (logger + train.py), m7_gesture_tx, m8_fault_tx, m9_uds_tester
+  node2_stm32/   bare-metal register-level C (no HAL/SPL): m1_uart_hello, m3_can_rx, m5_led_cmd, m6_tilt_rx, m7_gesture_rx, m8_fault_rx, m9_uds_rx
+  common/        e2e.h (alive counter + CRC-8), uds_server.h (UDS + DTC table)
 tests/      host-side C tests (gcc)
 captures/   logic analyzer captures and decoded screenshots
 data/       gesture dataset (CSV)
