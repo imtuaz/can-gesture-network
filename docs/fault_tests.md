@@ -24,7 +24,7 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
 | T3 | Sender stuck on old data | ESP32 `f`, later `n` | `lap` counts up, no valid data → SAFE after 300 ms. Without E2E the STM32 would keep acting on stale data | — | ✅ DEGRADED (0x02) on the first repeat, SAFE (0x03) 200 ms later, LED off; after `n`: DEGRADED until 1 s after the last E2E error, then NORMAL |
 | T4 | One frame lost | ESP32 `k` | `E2E: mat 1 frame`, frame still used, stays NORMAL | — | stays NORMAL ✅ (STM32 log not captured yet) |
 | T5 | STM32 unplugged (pull CANH+CANL of node 2) | wires | — | ACK errors: TEC rises to 128 → ERROR PASSIVE and **stops at 128, no bus-off**; "MAT STM32" after 300 ms | ✅ (STM32 held in reset / not running): TEC stays 128, TX queue 6, ~4 450 bus errors/s, busoff = 0; after the ACK returns TEC −1 per frame (−10/s) |
-| T6 | ESP32 unplugged | wires | timeout → SAFE; own 0x210 gets no ACK → TEC 128, ERROR PASSIVE, the 3 mailboxes fill (`tx ban` counts up) | — | |
+| T6 | ESP32 unplugged | wires | timeout → SAFE; own 0x210 gets no ACK → TEC 128, ERROR PASSIVE, the 3 mailboxes fill (`tx ban` counts up) | — | ESP32 side ✅ (TEC 128, queue 6, MAT, no bus-off). Found stale frames after re-plugging, see below |
 | T7 | CANH shorted to CANL (jumper, a few seconds) | jumper | bit errors (LEC "bit dominant"), BUS-OFF, ABOM recovers every few ms while the short is present → SAFE | BUS-OFF; 3 fast recoveries, then one attempt per second | ✅ ESP32: 3 recoveries ~100 ms apart, then 1 per second; STM32 reports bus-off (flag 0x08) |
 | T8 | Remove the short | jumper off | recovery, ERROR ACTIVE, NORMAL after 3 frames | "Phuc hoi xong sau … us" ≥ 2816 µs | ✅ 2895–3054 µs on a silent bus; ~9.3 ms when the STM32 was transmitting (its frames break the 11-recessive-bit sequences) |
 | T9 | STM32 software hang | ESP32 `h` (or STM32 UART `h`) | IWDG reset after ~0.33–0.67 s, banner "do WATCHDOG reset" | "MAT STM32", then STM32 back with flag 0x10 | ✅ MAT 300 ms after the last 0x210; reset ≈ 0.57 s after the hang (→ LSI ≈ 35 kHz); back on the bus ~13 ms later with flag 0x10; NORMAL 280 ms later |
@@ -66,3 +66,9 @@ Shared E2E code: `firmware/common/e2e.h`, host test `tests/test_e2e.c`.
 - **Bring-up mistake (not a CAN fault):** `IWDG_PR/RLR` written before starting the IWDG; LSI is off
   until `0xCCCC`, so `IWDG_SR` never cleared and the CPU hung. The bxCAN still ACKed in hardware,
   so the only symptom was ESP32 "TEC = 0 but no 0x210".
+- **Stale frames after a lost ACK (T6).** After re-plugging, the ESP32 first received three old `0x210`
+  frames (NORMAL / DEGRADED / NORMAL) that had been stuck in the STM32 mailboxes, and the STM32 accepted
+  the old `0x110` frames still waiting in the ESP32 TX queue: their counters were still consecutive,
+  so E2E could not tell they were old. An alive counter detects repeated and lost frames, not delayed ones.
+  Fix: when nothing can be queued (no ACK), the STM32 aborts its mailboxes and the ESP32 clears its TX
+  queue, so the first frame after the fault is fresh data.
