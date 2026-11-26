@@ -167,6 +167,11 @@ void send_tilt()
     n_sent++;
   } else {
     n_tx_fail++;                                   /* hang doi day, hoac dang bus-off */
+    /* Hang doi day = khong ai ACK. 5 frame dang cho la goc nghieng CU: khi cam lai day chung
+     * se duoc gui ra truoc va STM32 chap nhan (counter van lien tiep) -> dieu khien theo du lieu
+     * cu. Xoa di de frame dau tien sau khi het loi la du lieu moi. (Counter da tang, nen STM32
+     * se thay "nhay counter" -> dung la co frame bi mat.) */
+    twai_clear_transmit_queue();
   }
 }
 
@@ -238,9 +243,11 @@ void handle_rx()
         Serial.printf("[t=%lu ms] STM32 lien lac lai\n", millis());
       }
       if (rx.data[0] != node2_state && rx.data[0] < 3) {
-        Serial.printf("[t=%lu ms] STM32 trang thai: %s (co loi 0x%02X)%s\n", millis(),
-                      ST_NAMES[rx.data[0]], rx.data[3],
-                      (rx.data[3] & 0x10) ? " - STM32 vua bi WATCHDOG reset" : "");
+        Serial.printf("[t=%lu ms] STM32 trang thai: %s (co loi 0x%02X)\n", millis(),
+                      ST_NAMES[rx.data[0]], rx.data[3]);
+      }
+      if ((rx.data[3] & 0x10) && !(node2_flags & 0x10)) {   /* chi in 1 lan khi co moi bat */
+        Serial.printf("[t=%lu ms] STM32 khoi dong lai do WATCHDOG reset\n", millis());
       }
       node2_state = rx.data[0];
       node2_flags = rx.data[3];
@@ -252,6 +259,7 @@ void handle_rx()
   if (node2_alive && millis() - node2_last_ms > NODE2_TIMEOUT_MS) {
     node2_alive = false;
     node2_state = 255;
+    node2_flags = 0;
     Serial.printf("[t=%lu ms] MAT STM32: %d ms khong co 0x210\n", millis(), NODE2_TIMEOUT_MS);
   }
 }
