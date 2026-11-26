@@ -1,17 +1,3 @@
-/*
- * Moc 6 - phia ESP32: doc MPU6050, tinh goc nghieng, gui qua CAN moi 100 ms
- *
- * MPU6050 (GY-521) qua I2C: SDA = GPIO21, SCL = GPIO22, VCC = 3V3, AD0 bo trong -> dia chi 0x68
- * TWAI: G25 = TX -> CTX, G26 = RX <- CRX (module B), 500 kbit/s
- *
- * Frame gui: ID 0x110, DLC 4
- *   byte 0..1 = roll  (int16, don vi 0.01 do, little-endian: byte thap truoc)
- *   byte 2..3 = pitch (int16, don vi 0.01 do, little-endian)
- *   Vi du: roll = -12.50 do -> -1250 = 0xFB1E -> byte0 = 0x1E, byte1 = 0xFB
- *
- * Nhan: ID 0x200 tu STM32 khi LED doi trang thai (nghieng qua 30 do)
- */
-
 #include <Wire.h>
 #include <math.h>
 #include "driver/twai.h"

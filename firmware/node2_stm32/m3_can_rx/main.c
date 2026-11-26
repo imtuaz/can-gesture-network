@@ -1,17 +1,3 @@
-/*
- * Moc 3 - phia STM32F103 (Blue Pill): nhan frame CAN tu ESP32, in qua UART
- *
- * - Clock: HSE 8 MHz (thach anh, chuyen trong SystemInit), APB1 = 8 MHz
- * - bxCAN remap: PB8 = CAN_RX, PB9 = CAN_TX  -> noi voi SN65HVD230 #1
- * - USART1: PA9 TX, PA10 RX, 115200 (giong moc 1) -> CP2102
- * - LED PC13 dao trang thai moi khi nhan duoc 1 frame
- *
- * Bit timing 500 kbit/s:
- *   f_APB1 = 8 MHz, BRP = 1  -> 1 tq = 125 ns
- *   1 bit = 1 (sync) + 13 (BS1) + 2 (BS2) = 16 tq = 2 us -> 500 kbit/s
- *   diem lay mau = (1 + 13) / 16 = 87.5 %
- */
-
 #include <stdint.h>
 
 #define REG(addr)   (*(volatile uint32_t *)(addr))

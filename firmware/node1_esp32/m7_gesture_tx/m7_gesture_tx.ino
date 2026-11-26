@@ -1,21 +1,3 @@
-/*
- * Moc 7 - phia ESP32: nhan dang cu chi tren chip, gui ket qua qua CAN
- *
- * MPU6050: SDA = G21, SCL = G22 (cau hinh giong m7_collect: +-4g, +-1000 do/s, DLPF 44 Hz)
- * TWAI: G25 = TX -> CTX, G26 = RX <- CRX (module B), 500 kbit/s
- *
- * Luong xu ly:
- *   1. Doc cam bien 100 Hz, luu 100 mau gan nhat vao bo dem vong (ring buffer)
- *   2. Khi toc do quay > 100 do/s: bat dau 1 cu chi. Doc them 70 mau
- *      -> cua so 100 mau gom 30 mau truoc luc bat dau + 70 mau sau
- *   3. Tinh 48 dac trung (2 nua cua so) -> mang no-ron 48-16-4 -> cu chi co xac suat cao nhat
- *   4. Neu khong phai idle va xac suat >= 70%: gui ID 0x120, DLC 2
- *        byte 0 = ma cu chi (1 right, 2 left, 3 rotate), byte 1 = xac suat (%)
- *   5. Nghi 500 ms roi moi nhan cu chi tiep (tranh 1 cu chi bi dem 2 lan)
- *
- * gesture_model.h do train.py tao ra, dat cung thu muc voi file .ino nay.
- */
-
 #include <Wire.h>
 #include <math.h>
 #include "driver/twai.h"

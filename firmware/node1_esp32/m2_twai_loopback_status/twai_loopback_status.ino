@@ -1,14 +1,3 @@
-/*
- * Moc 2b: ESP32 TWAI loopback + theo doi loi bus
- *
- * Giong moc 2, them:
- * - Doc HET frame trong hang doi nhan moi vong (khong con bi tre)
- * - In trang thai bo dieu khien: TEC, REC, so frame dang cho, so loi
- * - Tu phuc hoi khi bi BUS-OFF
- *
- * Phan cung: jumper GPIO25 (TX) <-> GPIO26 (RX). Rut day ra de tao loi.
- */
-
 #include "driver/twai.h"
 
 #define CAN_TX_PIN  GPIO_NUM_25

@@ -1,15 +1,3 @@
-"""
-Moc 7 - buoc 1: luu du lieu cu chi tu ESP32 vao gestures.csv
-
-Cach dung (dong Serial Monitor cua Arduino IDE truoc):
-    python collect.py COM6 right s1
-
-Nhan: idle, right, left, rotate.   s1, s2, ... = lan deo cam bien (session).
-Moi lan: nhan BOOT, roi lam cu chi. ESP32 tu cat cua so khi tay quay > 100 do/s.
-idle = cu dong binh thuong nhung DU NHANH (gai dau, cam ly, chinh toc, vay chao).
-Ctrl+C de dung. Du lieu ghi tiep vao cung file.
-"""
-
 import csv
 import os
 import sys

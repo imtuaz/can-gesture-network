@@ -1,14 +1,3 @@
-/*
- * Moc 5 - phia ESP32: nut nhan -> lenh LED qua CAN, nhan trang thai tu STM32
- *
- * - Nut: BOOT tren board (GPIO0), nhan = muc 0
- * - Moi lan nhan: doi lenh LED (0 <-> 1), gui ID 0x100, DLC 1
- * - Nhan ID 0x200 tu STM32: in trang thai LED STM32 bao lai
- * - Sau 100 ms khong thay 0x200 -> bao "STM32 khong tra loi"
- *
- * TWAI: G25 = TX -> CTX, G26 = RX <- CRX (module B), 500 kbit/s
- */
-
 #include "driver/twai.h"
 
 #define PIN_TX      GPIO_NUM_25

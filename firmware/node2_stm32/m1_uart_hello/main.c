@@ -1,13 +1,3 @@
-/*
- * Moc 1: STM32F103C8 (Blue Pill) in "Hello" qua UART - lap trinh thanh ghi truc tiep
- *
- * - Clock: dung HSI 8 MHz mac dinh sau reset (chua dung PLL cho don gian)
- * - USART1: PA9 = TX, PA10 = RX, 115200 baud, 8N1
- * - LED PC13: nhay de biet chuong trinh dang chay (LED sang khi chan = 0)
- *
- * Dia chi thanh ghi lay tu Reference Manual RM0008.
- */
-
 #include <stdint.h>
 
 /* Doc/ghi 1 thanh ghi 32-bit tai dia chi addr */

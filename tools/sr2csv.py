@@ -1,22 +1,3 @@
-"""
-Chuyen file PulseView/sigrok (.sr) sang CSV cho protocol-analyzer
-(https://github.com/imtuaz/protocol-analyzer).
-
-File .sr la file zip: 'metadata' (samplerate, ten kenh) + cac khoi 'logic-1-N'
-(moi mau 1 byte, bit k = kenh Dk). Script chi ghi dong khi co kenh doi muc,
-nen CSV nho hon rat nhieu so voi xuat tung mau.
-
-Cach dung:
-    python sr2csv.py m6done.sr m6done.csv            # tat ca kenh co thay doi
-    python sr2csv.py m6done.sr m6done.csv D0 D1      # chi D0, D1
-    python sr2csv.py m4done.sr m4done.csv --pad-idle-us 30
-
---pad-idle-us N: them N us muc 1 (bus ranh, recessive) vao dau file.
-  Dung khi capture duoc trigger dung canh xuong cua SOF: mau dau tien da la 0
-  nen bo giai ma khong thay canh SOF. Truoc moi frame CAN bus luon ranh
-  >= 11 bit (22 us o 500 kbit/s), nen them doan nay khong lam sai du lieu.
-"""
-
 import re
 import sys
 import zipfile
@@ -30,7 +11,7 @@ def parse_rate(text):
 
 def main():
     if len(sys.argv) < 3:
-        print(__doc__)
+        print("usage: python sr2csv.py in.sr out.csv [D0 D1 ...] [--pad-idle-us N]")
         sys.exit(1)
     args = sys.argv[1:]
     pad_us = 0.0

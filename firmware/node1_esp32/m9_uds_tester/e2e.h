@@ -1,24 +1,3 @@
-/*
- * e2e.h - bao ve end-to-end (E2E) cho 1 frame CAN: alive counter + CRC-8
- *
- * Y tuong giong AUTOSAR E2E (Profile 1), viet lai don gian.
- * Dung chung cho ESP32 (ben gui) va STM32 (ben nhan). Chep y nguyen file nay vao:
- *   - thu muc sketch ESP32 (canh file .ino)
- *   - Core/Inc cua project CubeIDE
- *
- * Vi sao can them khi CAN da co CRC-15?
- *   CRC-15 chi bao ve doan DAY: bit bi nhieu tren bus. No khong biet phan mem ben gui
- *   co bi treo, gui mai 1 gia tri cu, hay du lieu da sai tu truoc khi vao bo CAN.
- *   - Alive counter (4 bit, 0..15, tang 1 moi frame): bat frame lap lai, frame bi mat.
- *   - CRC-8 tinh ca CAN ID + payload: bat du lieu sai do phan mem / gateway,
- *     va frame bi gan nham ID.
- *
- * Bo cuc payload (vi du 0x110, DLC 6):
- *   byte 0..n-1 : du lieu (n = n_payload)
- *   byte n      : alive counter (4 bit thap)
- *   byte n+1    : CRC-8 cua [ID byte thap, ID byte cao, byte 0..n]
- */
-
 #ifndef E2E_H
 #define E2E_H
 

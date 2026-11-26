@@ -1,6 +1,3 @@
-/*
- * Test e2e.h tren PC:  gcc -std=c99 -Wall -Wextra -I firmware/common tests/test_e2e.c -o test_e2e && ./test_e2e
- */
 #include <stdio.h>
 #include <string.h>
 #include "e2e.h"

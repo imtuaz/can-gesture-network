@@ -1,15 +1,3 @@
-/*
- * Moc 2: ESP32 TWAI (CAN) loopback - chua can transceiver
- *
- * Y tuong:
- * - Che do NO_ACK: gui frame ma khong can node khac tra ACK.
- * - Self reception: bo dieu khien tu nhan lai chinh frame no vua gui.
- * - Noi 1 day jumper GPIO25 (TX) -> GPIO26 (RX): day nay dong vai tro "bus".
- *
- * Toc do: 500 kbit/s (giong toc do cua ca du an).
- * Xem ket qua o Serial Monitor, 115200 baud.
- */
-
 #include "driver/twai.h"
 
 #define CAN_TX_PIN  GPIO_NUM_25

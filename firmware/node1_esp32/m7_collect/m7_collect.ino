@@ -1,17 +1,3 @@
-/*
- * Moc 7 - buoc 1 (ban 2): thu du lieu cu chi, cat cua so GIONG HET luc chay that
- *
- * Cach thu 1 mau:
- *   1. Nhan BOOT -> "# ARMED" (san sang trong 3 giay)
- *   2. Lam cu chi. Khi toc do quay > 100 do/s, ESP32 lay 30 mau truoc + 70 mau sau
- *      (dung co che cua m7_gesture_tx) roi gui qua Serial cho collect.py
- *
- * MPU6050: SDA = G21, SCL = G22. +-4g, +-1000 do/s, DLPF 44 Hz, 100 Hz
- * Nut: BOOT (GPIO0). Khong giu BOOT luc bam EN.
- *
- * Dinh dang Serial: S / 100 dong "ax,ay,az,gx,gy,gz" / E.  Dong bat dau bang # la thong bao.
- */
-
 #include <Wire.h>
 #include <math.h>
 

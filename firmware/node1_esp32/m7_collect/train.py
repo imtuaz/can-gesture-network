@@ -1,26 +1,3 @@
-"""
-Moc 7 - buoc 2: train model nhan dang cu chi, xuat trong so ra file C
-
-Cach dung (cung thu muc voi gestures_v2.csv):
-    python train.py
-
-Dau ra:
-    - In do chinh xac tren tap test:
-        neu co >= 2 session: train tren cac session dau, test tren session CUOI (sat thuc te hon)
-        neu chi 1 session : test tren 25% du lieu ngau nhien
-    - In ma tran nham lan (confusion matrix)
-    - Ghi ../m7_gesture_tx/gesture_model.h: trong so mang no-ron, dat thang vao thu muc sketch ESP32
-
-Pipeline (phai giong het ben ESP32):
-    1 mau = 100 dong x 6 truc (ax ay az gx gy gz), so nguyen tho
-    -> 48 dac trung: voi NUA DAU (mau 0-49) va NUA SAU (mau 50-99),
-       moi nua tinh mean(6), std(6), min(6), max(6)
-       (chia 2 nua de model biet pha nao cua cu chi xay ra truoc)
-    -> chuan hoa: (x - mean) / scale
-    -> lop an 16 no-ron, ReLU
-    -> lop ra 4 no-ron -> argmax
-"""
-
 import collections
 import csv
 import os

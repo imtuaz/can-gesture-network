@@ -1,28 +1,3 @@
-/*
- * Moc 7 - phia STM32F103 (Blue Pill): nhan cu chi tu ESP32 qua CAN
- *
- * - Nhan frame ID 0x120 (DLC 2): byte 0 = ma cu chi, byte 1 = xac suat (%)
- *     1 right  -> LED nhay 1 lan
- *     2 left   -> LED nhay 2 lan
- *     3 rotate -> dao trang thai LED (bat <-> tat)
- * - Sau moi cu chi: gui ID 0x200 (DLC 1) = trang thai LED
- * - Frame co ID khac: chi in qua UART
- *
- * Luu y: ham nhay LED dung vong lap cho (blocking) ~0.15 s moi lan sang/tat.
- * Trong luc do bxCAN van tu ACK va xep frame vao FIFO (3 o), nen khong mat frame
- * vi ESP32 nghi 500 ms giua 2 cu chi.
- *
- * - Clock: HSE 8 MHz (thach anh, chuyen trong SystemInit), APB1 = 8 MHz
- * - bxCAN remap: PB8 = CAN_RX, PB9 = CAN_TX  -> SN65HVD230 #1
- * - USART1: PA9 TX, PA10 RX, 115200 -> CP2102 (khong bat buoc)
- * - LED PC13: sang khi chan = 0. Nhay nhanh lien tuc = CAN init loi
- *
- * Bit timing 500 kbit/s:
- *   f_APB1 = 8 MHz, BRP = 1  -> 1 tq = 125 ns
- *   1 bit = 1 (sync) + 13 (BS1) + 2 (BS2) = 16 tq = 2 us -> 500 kbit/s
- *   diem lay mau = (1 + 13) / 16 = 87.5 %
- */
-
 #include <stdint.h>
 
 #define REG(addr)   (*(volatile uint32_t *)(addr))

@@ -1,12 +1,3 @@
-/*
- * Moc 3 - phia ESP32: gui frame CAN qua bus that toi Blue Pill
- *
- * - TWAI_MODE_NORMAL: frame phai duoc node khac (Blue Pill) tra ACK
- * - GPIO25 (TX) -> CTX cua SN65HVD230 #2
- * - GPIO26 (RX) <- CRX cua SN65HVD230 #2
- * - 500 kbit/s, gui ID 0x123 moi giay
- */
-
 #include "driver/twai.h"
 
 #define CAN_TX_PIN  GPIO_NUM_25

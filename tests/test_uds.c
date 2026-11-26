@@ -1,7 +1,3 @@
-/*
- * Test uds_server.h tren PC:
- *   gcc -std=c99 -Wall -Wextra -I firmware/common tests/test_uds.c -o test_uds && ./test_uds
- */
 #include <stdio.h>
 #include <string.h>
 #include "uds_server.h"

@@ -1,30 +1,3 @@
-/*
- * Moc 8 - phia ESP32: gui goc nghieng co bao ve E2E, theo doi loi bus, gay loi co chu dich
- *
- * MPU6050: SDA = G21, SCL = G22. TWAI: G25 = TX -> CTX, G26 = RX <- CRX (module B), 500 kbit/s
- * e2e.h (chep tu firmware/common) dat cung thu muc voi file .ino nay.
- *
- * Gui:  0x110 DLC 6 moi 100 ms: roll (int16 LE, 0.01 do), pitch, alive counter, CRC-8
- * Nhan: 0x210 moi 100 ms tu STM32 [trang thai, TEC, REC, co loi] -> qua 300 ms khong thay
- *       thi bao "mat STM32". 0x200: trang thai LED.
- *
- * Xu ly bus-off (chien luoc phuc hoi 2 muc, giong cach ECU that lam):
- *   - 3 lan bus-off dau: phuc hoi ngay (twai_initiate_recovery)
- *   - tu lan thu 4 (trong vong 5 s): cho 1 s roi moi phuc hoi, tranh lam nghen bus
- *     khi loi van con (vi du day van dang bi chap)
- *   Phuc hoi = controller phai thay 128 lan x 11 bit lan = 1408 bit = 2.816 ms o 500 kbit/s.
- *
- * Lenh qua Serial Monitor (115200, go 1 ky tu roi Enter):
- *   n = binh thuong (tat moi loi gia lap)
- *   s = im lang: ngung gui 0x110 (phan mem bi "treo" nhung bo CAN van ACK)
- *   f = dong bang: gui lai y nguyen frame cu (counter khong tang)
- *   c = lam sai CRC cua 1 frame
- *   k = bo qua 1 counter (gia lap mat 1 frame)
- *   i = in trang thai ngay
- * Lenh cho STM32 (gui qua CAN 0x7E0, khong can noi PA10):
- *   h = STM32 treo CPU (thu watchdog)   x = STM32 ngung gui 0x210   y = STM32 gui lai 0x210
- */
-
 #include <Wire.h>
 #include <math.h>
 #include "driver/twai.h"

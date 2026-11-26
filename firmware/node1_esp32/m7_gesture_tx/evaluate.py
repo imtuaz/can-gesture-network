@@ -1,14 +1,3 @@
-"""
-Moc 7 - do do chinh xac khi chay that (tren ESP32, khong phai tap test)
-
-Cach dung (dong Serial Monitor truoc, ESP32 dang chay m7_gesture_tx):
-    python evaluate.py COM6 right
-Lam dung cu chi 'right' 20 lan, roi Ctrl+C. Lam lai voi left, rotate.
-Voi idle: lam viec binh thuong (go phim, cam ly, gai dau...) khoang 1 phut.
-
-Ket qua ghi them vao eval_log.csv, in tong ket sau moi lan Ctrl+C.
-"""
-
 import csv
 import os
 import re
